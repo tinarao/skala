@@ -34,14 +34,12 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
 
 // Tasks
 
-export const taskStatusEnum = pgEnum('status', ['not started', 'in progress', 'done', 'scrapped'])
+export const taskStatusEnum = pgEnum('status', ['not_started', 'in_progress', 'done', 'scrapped'])
 export const taskPriorityEnum = pgEnum('priority', ['low', 'normal', 'high', 'ultra'])
 
 export const tasks = pgTable('task', {
     id: serial('id').primaryKey(),
     name: text('name'),
-    tasks: varchar('tasks', { length: 256 }),
-    percentage: integer('precentage'),
     status: taskStatusEnum('status'),
     priority: taskPriorityEnum('taskPriorityEnum'),
     description: text('description'),

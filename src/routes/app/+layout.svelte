@@ -1,0 +1,22 @@
+<script>
+	import Button from '$lib/components/ui/button/button.svelte';
+	import Brackets from 'lucide-svelte/icons/brackets';
+</script>
+
+<div class="flex flex-col h-screen">
+	<header class="py-4 border-b">
+		<div class="container mx-auto flex justify-between items-center">
+			<h1 class="font-medium text-xl" title="Название проекта" aria-label="Название проекта">
+				Skala
+			</h1>
+			<div class="space-x-2">
+				<Button href="/app">
+					<Brackets class="size-4 mr-2" />
+					Проекты
+				</Button>
+			</div>
+		</div>
+	</header>
+
+	<slot />
+</div>
