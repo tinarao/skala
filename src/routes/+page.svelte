@@ -1,9 +1,7 @@
 <script>
-	export let data;
+	import Button from '$lib/components/ui/button/button.svelte';
 </script>
 
-<div>
-	<h1>
-		{data.allUsers.length}
-	</h1>
-</div>
+<header class="flex justify-end py-2 container">
+	<Button href="/app">Панель управления</Button>
+</header>

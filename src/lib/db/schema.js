@@ -2,14 +2,17 @@ import { relations } from "drizzle-orm";
 import { integer, pgEnum, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
 
 export const plansEnum = pgEnum('plans', ["free", "pro"])
+export const roleEnum = pgEnum('role', ['programmer', 'designer', 'manager'])
 
 export const users = pgTable('user', {
     id: serial('id').primaryKey(),
-    username: text('username').notNull().unique(),
+    username: text('username').notNull().unique().notNull(),
     email: varchar('email', { length: 256 }).unique(),
-    password: varchar('password', { length: 48 }),
+    password: varchar('password', { length: 128 }).notNull(),
     plan: plansEnum('plans'),
-    picture: text('picture')
+    picture: text('picture'),
+    sessionId: text('sessionId'),
+    role: roleEnum('role')
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -41,7 +44,7 @@ export const tasks = pgTable('task', {
     id: serial('id').primaryKey(),
     name: text('name'),
     status: taskStatusEnum('status'),
-    priority: taskPriorityEnum('taskPriorityEnum'),
+    priority: taskPriorityEnum('priority'),
     description: text('description'),
     projectId: integer('projectId').references(() => projects.id)
 })

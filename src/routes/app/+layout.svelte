@@ -1,10 +1,15 @@
 <script>
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Brackets from 'lucide-svelte/icons/brackets';
+
+	export let data;
+	if (data.ok) {
+		console.info('Session verified.');
+	}
 </script>
 
 <div class="flex flex-col h-screen">
-	<header class="py-4 border-b">
+	<header class="py-2 border-b">
 		<div class="container mx-auto flex justify-between items-center">
 			<h1 class="font-medium text-xl" title="Название проекта" aria-label="Название проекта">
 				Skala

@@ -1,7 +1,6 @@
 <script>
 	import AddTaskCard from '$lib/components/add-task-card.svelte';
 	import TaskCard from '$lib/components/task-card.svelte';
-	import Button from '$lib/components/ui/button/button.svelte';
 	import { taskStatus } from '$lib/db/enums';
 	import { project } from '$lib/mock';
 
