@@ -33,6 +33,10 @@ export async function load({ cookies }) {
         }
 
         cookies.set('session_id', String(user.sessionId), { path: '/' })
+        const redisResult = await redis.set(sessionId, user.id, { ex: 60 * 60 * 24 });
+        if (redisResult !== "OK") {
+            return new Response(JSON.stringify({ "message": "Ошибка при авторизации. Попробуйте позже." }), { status: 500 })
+        }
 
         return { ok: true };
     } else {

@@ -27,7 +27,7 @@ export async function POST({ request, cookies }) {
     }
 
     const sessionId = nanoid(32);
-    const redisResult = await redis.set(sessionId, user.id);
+    const redisResult = await redis.set(sessionId, user.id, { ex: 60 * 60 * 24 });
     if (redisResult !== "OK") {
         return new Response(JSON.stringify({ "message": "Ошибка при авторизации. Попробуйте позже." }), { status: 500 })
     }

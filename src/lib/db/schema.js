@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { integer, pgEnum, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
+import { boolean, date, integer, pgEnum, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
 
 export const plansEnum = pgEnum('plans', ["free", "pro"])
 export const roleEnum = pgEnum('role', ['programmer', 'designer', 'manager'])
@@ -23,7 +23,10 @@ export const projects = pgTable('project', {
     id: serial('id').primaryKey(),
     name: text('name'),
     percentage: integer('precentage'),
-    authorId: integer('projectId').references(() => users.id)
+    authorId: integer('projectId').references(() => users.id),
+    remind: boolean('remind'),
+    deadline: date("deadline"),
+    createdAt: date("createdAt")
 });
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
