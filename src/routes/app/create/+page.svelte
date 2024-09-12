@@ -10,29 +10,53 @@
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { cn } from '$lib/utils';
 	import { DateFormatter, getLocalTimeZone } from '@internationalized/date';
+	import { toast } from 'svelte-sonner';
+	import { goto } from '$app/navigation';
 
 	/** @type {import("@internationalized/date").DateValue | undefined}*/
-	let value;
+	let date = undefined;
 	let remind = false;
 
 	let name = '';
 
 	const df = new DateFormatter('ru-RU', {
-		dateStyle: 'long'
+		dateStyle: 'full'
 	});
 
 	async function submit() {
-		if (!value) {
+		if (!date) {
 			return;
 		}
 
-		const date = df.format(value.toDate(getLocalTimeZone()));
-
-		console.log({
-			deadline: date,
+		const values = {
+			deadline: new Date(date.toString()),
+			// deadline: 'sosi',
 			remind,
 			name
+		};
+
+		const res = await fetch('/api/projects', {
+			method: 'POST',
+			body: JSON.stringify(values)
 		});
+
+		const resData = await res.json();
+		if (res.status !== 201) {
+			if (res.status === 400) {
+				toast.error('Вы заполнили все поля? Точно?');
+				return;
+			}
+
+			if (res.status === 401) {
+				await fetch('/api/auth/logout', { method: 'POST' });
+				goto('/login');
+			}
+		}
+
+		toast.success('Проект создан!');
+
+		goto('/app');
+		return;
 	}
 </script>
 
@@ -54,18 +78,15 @@
 					<Popover.Trigger asChild let:builder>
 						<Button
 							variant="outline"
-							class={cn(
-								'mt-1 justify-start text-left font-normal',
-								!value && 'text-muted-foreground'
-							)}
+							class={cn('justify-start text-left font-normal', !date && 'text-muted-foreground')}
 							builders={[builder]}
 						>
 							<CalendarIcon class="mr-2 h-4 w-4" />
-							{value ? df.format(value.toDate(getLocalTimeZone())) : 'Pick a date'}
+							{date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date'}
 						</Button>
 					</Popover.Trigger>
 					<Popover.Content class="w-auto p-0">
-						<Calendar bind:value initialFocus />
+						<Calendar bind:value={date} initialFocus />
 					</Popover.Content>
 				</Popover.Root>
 			</div>
