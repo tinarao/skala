@@ -1,11 +1,11 @@
 /**
  * @typedef {Object} Task
- * @property {number} id
- * @property {string} name
- * @property {string} status
- * @property {string} priority
- * @property {string} [description]
- * @property {number} projectId
+ * @property {number| null} id
+ * @property {string | null} name
+ * @property {string| null} status
+ * @property {string| null} priority
+ * @property {string| null} [description]
+ * @property {number| null} projectId
  */
 
 module.exports = {}

@@ -38,7 +38,7 @@ export async function load({ cookies }) {
             return new Response(JSON.stringify({ "message": "Ошибка при авторизации. Попробуйте позже." }), { status: 500 })
         }
 
-        return { ok: true };
+        return { ok: true, user: { id: user.id, username: user.username } };
     } else {
         const userId = await redis.get(sessionId)
         if (!userId || userId !== parseInt(cookieId)) {
@@ -49,7 +49,30 @@ export async function load({ cookies }) {
             return redirect(302, '/login');
         }
 
-        console.timeEnd("session verifier")
-        return { ok: true };
+        const user = await db.query.users.findFirst({
+            where: (user, { eq }) => eq(user.id, parseInt(userId))
+        })
+
+        if (!user) {
+            cookies.delete("session_id", { path: '/' });
+            cookies.delete("id", { path: '/' });
+
+            console.timeEnd("session verifier")
+            return redirect(302, '/login');
+        }
+
+        if (!user.sessionId) {
+            cookies.delete("session_id", { path: '/' });
+            cookies.delete("id", { path: '/' });
+
+            console.timeEnd("session verifier")
+            return redirect(302, "/login")
+        }
+
+        cookies.set('id', user.id.toString(), { path: '/' });
+        cookies.set('session_id', user?.sessionId, { path: '/' });
+
+        console.timeEnd("session verifier");
+        return { ok: true, user: { id: user.id, username: user.username } };
     }
 }

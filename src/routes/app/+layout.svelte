@@ -1,10 +1,12 @@
 <script>
 	import Button from '$lib/components/ui/button/button.svelte';
+	import { userStore } from '$lib/user.js';
 	import Brackets from 'lucide-svelte/icons/brackets';
 
 	export let data;
-	if (data.ok) {
+	if (data.ok && data.user) {
 		console.info('Session verified.');
+		$userStore = data.user;
 	}
 </script>
 

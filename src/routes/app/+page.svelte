@@ -3,10 +3,10 @@
 	import Placeholder from '../../assets/project-ph.jpg';
 	import Plus from 'lucide-svelte/icons/plus';
 	import { Progress } from '$lib/components/ui/progress';
+	import { userStore } from '$lib/user';
 
 	export let data;
-
-	console.log(data);
+	const userId = $userStore.id;
 </script>
 
 <div class="container py-6 h-full">
@@ -16,8 +16,8 @@
 		{#if data.projects?.length && data.projects !== undefined}
 			{#each data.projects as project}
 				<a
-					href="/project?id={project.id}"
-					class="col-span-1 border rounded-md hover:shadow-md transition"
+					href="/app/project?id={project.id}&u={userId}"
+					class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
 				>
 					<img src={Placeholder} alt="Проект {project.name}" />
 					<div class="p-2">

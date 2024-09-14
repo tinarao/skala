@@ -11,18 +11,23 @@
 	<div class="p-2 border rounded-md">
 		<div class="flex items-center justify-between">
 			<h6 class="font-medium">{task.name}</h6>
-			<Collapsible.Trigger asChild let:builder>
-				<Button size="icon" variant="ghost_gray" builders={[builder]}>
-					<GripHorizontal class="size-4" />
-				</Button>
-			</Collapsible.Trigger>
+			{#if task.description}
+				<Collapsible.Trigger asChild let:builder>
+					<Button size="icon" variant="ghost_gray" builders={[builder]}>
+						<GripHorizontal class="size-4" />
+					</Button>
+				</Collapsible.Trigger>
+			{/if}
 		</div>
-		<Collapsible.Content>
-			<hr class="my-1" />
-			<p class="text-sm font-medium">
-				{task.description}
-			</p>
-		</Collapsible.Content>
+
+		{#if task.description}
+			<Collapsible.Content>
+				<hr class="my-1" />
+				<p class="text-sm font-medium">
+					{task.description}
+				</p>
+			</Collapsible.Content>
+		{/if}
 	</div>
 </Collapsible.Root>
 <!-- </div> -->

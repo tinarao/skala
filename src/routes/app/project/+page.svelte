@@ -2,16 +2,17 @@
 	import AddTaskCard from '$lib/components/add-task-card.svelte';
 	import TaskCard from '$lib/components/task-card.svelte';
 	import { taskStatus } from '$lib/db/enums';
-	import { project } from '$lib/mock';
 
-	// Попробую когда-нибудь починить это уёбище
-	// Сейчас лениво
-	$: done = project.tasks.filter((t) => t.status === taskStatus.Done);
-	$: inProgress = project.tasks.filter((t) => t.status === taskStatus.InProgress);
-	$: notStarted = project.tasks.filter((t) => t.status === taskStatus.NotStarted);
-	$: scrapped = project.tasks.filter((t) => t.status === taskStatus.Scrapped);
+	export let data;
+	// // Попробую когда-нибудь починить это уёбище
+	// // Сейчас лениво
+	$: done = data.project.tasks.filter((t) => t.status === 'done');
+	$: inProgress = data.project.tasks.filter((t) => t.status === taskStatus.InProgress);
+	$: notStarted = data.project.tasks.filter((t) => t.status === 'not_started');
+	$: scrapped = data.project.tasks.filter((t) => t.status === taskStatus.Scrapped);
 </script>
 
+<title>Проект {data.project.name} - Skala</title>
 <div class="grid grid-cols-4 gap-x-4 flex-1 container mx-auto py-4">
 	<div class="col-span-1 h-full p-4">
 		<div class="flex items-center bg-teal-900 p-3 rounded-md space-x-2">
@@ -23,7 +24,7 @@
 			{#each notStarted as task}
 				<TaskCard {task} />
 			{/each}
-			<AddTaskCard status="not_started" />
+			<AddTaskCard projectId={data.project.id} />
 		</div>
 	</div>
 	<div class="col-span-1 p-4">
@@ -36,7 +37,6 @@
 			{#each inProgress as task}
 				<TaskCard {task} />
 			{/each}
-			<AddTaskCard status="in_progress" />
 		</div>
 	</div>
 	<div class="col-span-1 p-4">
@@ -49,7 +49,6 @@
 			{#each done as task}
 				<TaskCard {task} />
 			{/each}
-			<AddTaskCard status="done" />
 		</div>
 	</div>
 	<div class="col-span-1 p-4">
@@ -62,7 +61,6 @@
 			{#each scrapped as task}
 				<TaskCard {task} />
 			{/each}
-			<AddTaskCard status="scrapped" />
 		</div>
 	</div>
 </div>

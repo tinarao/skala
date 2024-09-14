@@ -41,13 +41,21 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
 // Tasks
 
 export const taskStatusEnum = pgEnum('status', ['not_started', 'in_progress', 'done', 'scrapped'])
+export const PrioritiesEnum = ['low', 'normal', 'high', 'ultra']
 export const taskPriorityEnum = pgEnum('priority', ['low', 'normal', 'high', 'ultra'])
 
 export const tasks = pgTable('task', {
     id: serial('id').primaryKey(),
     name: text('name'),
-    status: taskStatusEnum('status'),
-    priority: taskPriorityEnum('priority'),
+    status: taskStatusEnum('status').default("not_started"),
+    priority: taskPriorityEnum('priority').default('normal'),
     description: text('description'),
     projectId: integer('projectId').references(() => projects.id)
 })
+
+export const tasksRelations = relations(tasks, ({ one }) => ({
+    project: one(projects, {
+        fields: [tasks.projectId],
+        references: [projects.id],
+    }),
+}))
