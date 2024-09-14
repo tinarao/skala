@@ -1,6 +1,6 @@
 export const taskStatus = {
-    NotStarted: "not started",
-    InProgress: "in progress",
+    NotStarted: "not_started",
+    InProgress: "in_progress",
     Done: "done",
     Scrapped: "scrapped"
 }
