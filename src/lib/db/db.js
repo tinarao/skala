@@ -1,17 +1,24 @@
-import { DB_URL } from "$env/static/private";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import { projects, projectsRelations, tasks, tasksRelations, users, usersRelations } from "./schema";
+import { DB_URL } from '$env/static/private';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import {
+	projects,
+	projectsRelations,
+	tasks,
+	tasksRelations,
+	users,
+	usersRelations
+} from './schema';
 
-const client = postgres(DB_URL)
+const client = postgres(DB_URL);
 export const db = drizzle(client, {
-    schema: {
-        users: users,
-        projects: projects,
-        tasks: tasks,
+	schema: {
+		users: users,
+		projects: projects,
+		tasks: tasks,
 
-        usersRelation: usersRelations,
-        projectsRelations: projectsRelations,
-        tasksRelations: tasksRelations
-    }
+		usersRelation: usersRelations,
+		projectsRelations: projectsRelations,
+		tasksRelations: tasksRelations
+	}
 });

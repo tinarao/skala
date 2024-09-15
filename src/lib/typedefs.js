@@ -8,4 +8,4 @@
  * @property {number| null} projectId
  */
 
-module.exports = {}
+module.exports = {};

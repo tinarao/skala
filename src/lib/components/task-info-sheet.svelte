@@ -5,7 +5,6 @@
 	import { Label } from './ui/label';
 	import { Textarea } from './ui/textarea';
 	import { invalidate } from '$app/navigation';
-	import { RowSpacing } from 'svelte-radix';
 
 	/** @type {import("$lib/typedefs").Task}*/
 	export let task;

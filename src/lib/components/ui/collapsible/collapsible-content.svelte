@@ -1,9 +1,9 @@
 <script>
-	import { Collapsible as CollapsiblePrimitive } from "bits-ui";
-	import { slide } from "svelte/transition";
+	import { Collapsible as CollapsiblePrimitive } from 'bits-ui';
+	import { slide } from 'svelte/transition';
 	export let transition = slide;
 	export let transitionConfig = {
-		duration: 150,
+		duration: 150
 	};
 </script>
 
