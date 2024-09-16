@@ -17,7 +17,7 @@ export async function load({ url, depends }) {
 
 	const project = await db.query.projects.findFirst({
 		where: (pr, { eq }) => eq(pr.id, parseInt(projectId)),
-		with: { tasks: true }
+		with: { tasks: { with: { comments: true } } }
 	});
 
 	if (!project || project.authorId !== parseInt(userId)) {

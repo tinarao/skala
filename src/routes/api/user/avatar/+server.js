@@ -1,25 +1,16 @@
 import { db } from "$lib/db/db";
 import { users } from "$lib/db/schema";
 import { redis } from "$lib/redis";
+import { authMiddleware } from "$lib/server/auth-mw";
 import { utapi } from "$lib/server/ut";
 import { eq } from "drizzle-orm";
 
 /** @type {import("./$types").RequestHandler} */
 export async function PATCH({ request, cookies }) {
     const formdata = await request.formData();
-    const cookieId = cookies.get("id");
-    const cookieSid = cookies.get("session_id");
 
-    if (!cookieId) {
-        return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 401 })
-    }
-
-    if (!cookieSid) {
-        return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 401 })
-    }
-
-    const redisUserId = await redis.get(cookieSid);
-    if (redisUserId != cookieId) {
+    const isAuth = await authMiddleware(cookies);
+    if (!isAuth) {
         return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
     }
 

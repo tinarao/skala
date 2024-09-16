@@ -61,18 +61,19 @@ export const tasks = pgTable('task', {
 	projectId: integer('projectId').references(() => projects.id)
 });
 
-export const tasksRelations = relations(tasks, ({ one }) => ({
+export const tasksRelations = relations(tasks, ({ one, many }) => ({
 	project: one(projects, {
 		fields: [tasks.projectId],
 		references: [projects.id]
-	})
+	}),
+	comments: many(comments)
 }));
 
 export const comments = pgTable('comment', {
 	id: serial('id').primaryKey(),
 	authorId: integer('authorId').references(() => users.id),
 	taskId: integer('taskId').references(() => tasks.id),
-	body: text('body'),
+	body: text('body').notNull(),
 	createdAt: date('createdAt'),
 	likes: integer('likes').default(0)
 })

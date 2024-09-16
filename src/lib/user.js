@@ -1,5 +1,5 @@
-import { persisted } from 'svelte-persisted-store';
 import { writable } from 'svelte/store';
+import { persisted } from 'svelte-persisted-store';
 
 /**
  * @typedef {Object} UserState
@@ -16,4 +16,3 @@ let initialState = {
 };
 
 export const userStore = persisted('user', initialState);
-// export let userStore = writable(initialState)

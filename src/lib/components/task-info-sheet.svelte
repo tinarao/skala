@@ -3,8 +3,10 @@
 	import { toast } from 'svelte-sonner';
 	import { Label } from './ui/label';
 	import { Textarea } from './ui/textarea';
-	import { invalidate } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import Button from './ui/button/button.svelte';
+	import TaskComments from './tasks/task-comments.svelte';
+	import { onMount } from 'svelte';
 
 	/** @type {import("$lib/typedefs").Task}*/
 	export let task;
@@ -32,6 +34,13 @@
 		isEditingDescription = false;
 		return;
 	}
+
+	onMount(() => {
+		if (!task.id) {
+			goto('/app');
+			return;
+		}
+	});
 </script>
 
 <Sheet.Root>
@@ -71,6 +80,7 @@
 				{/if}
 			</div>
 			<hr class="my-2" />
+			<TaskComments taskId={task.id ?? 0} />
 		</div>
 	</Sheet.Content>
 </Sheet.Root>
