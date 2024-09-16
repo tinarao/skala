@@ -3,11 +3,13 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import {
 	projects,
-	projectsRelations,
 	tasks,
-	tasksRelations,
 	users,
-	usersRelations
+	comments,
+	projectsRelations,
+	tasksRelations,
+	usersRelations,
+	commentRelations,
 } from './schema';
 
 const client = postgres(DB_URL);
@@ -16,9 +18,11 @@ export const db = drizzle(client, {
 		users: users,
 		projects: projects,
 		tasks: tasks,
+		comments: comments,
 
 		usersRelation: usersRelations,
 		projectsRelations: projectsRelations,
-		tasksRelations: tasksRelations
+		tasksRelations: tasksRelations,
+		commentsRelations: commentRelations
 	}
 });

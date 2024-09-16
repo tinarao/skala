@@ -4,6 +4,7 @@ import { redis } from '$lib/redis';
 import { z } from 'zod';
 import { projects, users } from '$lib/db/schema';
 import { eq, sql } from 'drizzle-orm';
+import { projectValidator } from '$lib/validators';
 
 const CreateProjectDTO = z.object({
 	name: z.ostring(),
@@ -57,3 +58,35 @@ export async function POST({ request, cookies }) {
 
 	return new Response(JSON.stringify(saved), { status: 201 });
 }
+
+/** @type {import('./$types').RequestHandler} */
+export async function PATCH({ request, cookies }) {
+	const payload = projectValidator.safeParse(await request.json());
+	if (!payload.success) {
+		return new Response(JSON.stringify(payload.error), { status: 400 })
+	}
+
+	const cookieId = cookies.get("id");
+	const cookieSid = cookies.get("session_id");
+
+	if (!cookieId) {
+		return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 401 })
+	}
+
+	if (!cookieSid) {
+		return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 401 })
+	}
+
+	const redisUserId = await redis.get(cookieSid);
+	if (redisUserId != cookieId) {
+		return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
+	}
+
+	const updated = await db.update(projects).set({
+		name: payload.data.name,
+		remind: payload.data.remind,
+		percentage: payload.data.percentage
+	}).where(eq(projects.id, payload.data.id)).returning()
+
+	return new Response(JSON.stringify(updated), { status: 201 })
+}	

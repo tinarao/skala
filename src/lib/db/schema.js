@@ -31,7 +31,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const projects = pgTable('project', {
 	id: serial('id').primaryKey(),
 	name: text('name'),
-	percentage: integer('precentage'),
+	percentage: integer('precentage').default(0),
 	authorId: integer('projectId').references(() => users.id),
 	remind: boolean('remind'),
 	deadline: date('deadline'),
@@ -67,3 +67,23 @@ export const tasksRelations = relations(tasks, ({ one }) => ({
 		references: [projects.id]
 	})
 }));
+
+export const comments = pgTable('comment', {
+	id: serial('id').primaryKey(),
+	authorId: integer('authorId').references(() => users.id),
+	taskId: integer('taskId').references(() => tasks.id),
+	body: text('body'),
+	createdAt: date('createdAt'),
+	likes: integer('likes').default(0)
+})
+
+export const commentRelations = relations(comments, ({ one }) => ({
+	task: one(tasks, {
+		fields: [comments.taskId],
+		references: [tasks.id]
+	}),
+	author: one(users, {
+		fields: [comments.authorId],
+		references: [users.id]
+	}),
+}))

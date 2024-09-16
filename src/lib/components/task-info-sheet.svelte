@@ -1,10 +1,10 @@
 <script>
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { toast } from 'svelte-sonner';
-	import Button from './ui/button/button.svelte';
 	import { Label } from './ui/label';
 	import { Textarea } from './ui/textarea';
 	import { invalidate } from '$app/navigation';
+	import Button from './ui/button/button.svelte';
 
 	/** @type {import("$lib/typedefs").Task}*/
 	export let task;
@@ -43,10 +43,6 @@
 			<Sheet.Title>
 				{task.name}
 			</Sheet.Title>
-			<!-- <Sheet.Description>
-				This action cannot be undone. This will permanently delete your account and remove your data
-				from our servers.
-			</Sheet.Description> -->
 		</Sheet.Header>
 		<div class="h-full py-8">
 			<div class="grid">
@@ -56,7 +52,7 @@
 						{task.description}
 					</p>
 				{:else if isEditingDescription}
-					<Textarea bind:value={desc} class="my-2 h-fit"></Textarea>
+					<Textarea maxlength="300" rows="10" bind:value={desc} class="my-2 h-fit"></Textarea>
 					<div class="flex items-center gap-x-2">
 						<Button class="w-full" size="sm" on:click={editDescription}>Сохранить</Button>
 						<Button

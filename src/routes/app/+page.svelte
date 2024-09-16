@@ -9,7 +9,8 @@
 	const userId = $userStore.id;
 </script>
 
-<div class="container py-6 h-full">
+<title>Проекты - Skala</title>
+<div class="h-full">
 	<h1 class="text-4xl font-medium">Ваши проекты</h1>
 
 	<div class="grid grid-cols-4 gap-4 py-4">
