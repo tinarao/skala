@@ -48,8 +48,17 @@
 				>Окно изменения проекта. Перечислить все возможности изменить проект</Dialog.Description
 			>
 		</Dialog.Header>
-		<Label>Переименовать проект</Label>
-		<Input bind:value={name} />
+		<div>
+			<Label>Переименовать проект</Label>
+			<Input bind:value={name} />
+		</div>
+		<div>
+			<Label>Пригласить пользователя</Label>
+			<div class="flex items-center">
+				<Input placeholder="Имя пользователя" />
+				<Button variant="outline" class="ml-2">Отправить</Button>
+			</div>
+		</div>
 		<hr class="my-1" />
 		<div class="flex items-center justify-between">
 			<Button on:click={handleSaveChanges}>Сохранить</Button>

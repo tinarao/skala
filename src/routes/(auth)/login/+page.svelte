@@ -41,10 +41,7 @@
 			}
 
 			toast.success('Успешно!');
-			$userStore = {
-				id: resData[0].id,
-				username: resData[0].username
-			};
+			await userStore.getUser();
 
 			goto('/app');
 			return;

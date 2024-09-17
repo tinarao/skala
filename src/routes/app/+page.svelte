@@ -6,7 +6,6 @@
 	import { userStore } from '$lib/user';
 
 	export let data;
-	const userId = $userStore.id;
 </script>
 
 <title>Проекты - Skala</title>
@@ -17,7 +16,7 @@
 		{#if data.projects?.length && data.projects !== undefined}
 			{#each data.projects as project}
 				<a
-					href="/app/project?id={project.id}&u={userId}"
+					href="/app/project?id={project.id}&u={$userStore.id}"
 					class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
 				>
 					<img src={Placeholder} alt="Проект {project.name}" />

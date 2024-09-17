@@ -1,5 +1,4 @@
 <script>
-	import * as Resizable from '$lib/components/ui/resizable';
 	import * as Card from '$lib/components/ui/card';
 
 	import Button from '$lib/components/ui/button/button.svelte';
@@ -8,10 +7,7 @@
 	import AvatarPlaceholder from '../../assets/avatar-ph.jpg';
 
 	export let data;
-	if (data.ok && data.user) {
-		console.info('Session verified.');
-		$userStore = data.user;
-	}
+	$userStore = data.user;
 </script>
 
 <div class="flex flex-col h-screen">

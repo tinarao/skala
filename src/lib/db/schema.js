@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
 	boolean,
 	date,
@@ -21,11 +21,13 @@ export const users = pgTable('user', {
 	plan: plansEnum('plans'),
 	picture: text('picture'),
 	sessionId: text('sessionId'),
-	role: roleEnum('role')
+	role: roleEnum('role'),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({
-	projects: many(projects)
+	projects: many(projects, { relationName: "projects" }),
+	collaborations: many(projects, { relationName: "collaborations" }),
+	invitedTo: many(projects, { relationName: "invitedTo" })
 }));
 
 export const projects = pgTable('project', {
@@ -35,15 +37,22 @@ export const projects = pgTable('project', {
 	authorId: integer('projectId').references(() => users.id),
 	remind: boolean('remind'),
 	deadline: date('deadline'),
+	tags: text('tags')
+		.array()
+		.notNull()
+		.default(sql`'{}'::text[]`),
 	createdAt: date('createdAt')
 });
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
 	author: one(users, {
 		fields: [projects.authorId],
-		references: [users.id]
+		references: [users.id],
+		relationName: "projects"
 	}),
-	tasks: many(tasks)
+	tasks: many(tasks),
+	collaborators: many(users, { relationName: "collaborations" }),
+	invitations: many(users, { relationName: "invitedTo" })
 }));
 
 // Tasks
