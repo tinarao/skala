@@ -10,6 +10,11 @@ import {
 	tasksRelations,
 	usersRelations,
 	commentRelations,
+
+	projectToCollaborators,
+	projectToCollaboratorsRelation,
+	projectToInvitations,
+	projectToInvitationsRelation
 } from './schema';
 
 const client = postgres(DB_URL);
@@ -23,6 +28,11 @@ export const db = drizzle(client, {
 		usersRelation: usersRelations,
 		projectsRelations: projectsRelations,
 		tasksRelations: tasksRelations,
-		commentsRelations: commentRelations
+		commentsRelations: commentRelations,
+
+		projectToCollaborators,
+		projectToCollaboratorsRelation,
+		projectToInvitations,
+		projectToInvitationsRelation
 	}
 });

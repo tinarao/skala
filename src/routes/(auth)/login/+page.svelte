@@ -41,7 +41,7 @@
 			}
 
 			toast.success('Успешно!');
-			await userStore.getUser();
+			//TODO: DEBUG $userStore = resData
 
 			goto('/app');
 			return;

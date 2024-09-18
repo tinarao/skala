@@ -39,7 +39,7 @@
 				</Card.Footer>
 			</Card.Root>
 		</aside>
-		<div class="col-span-6 p-4">
+		<div class="col-span-6 px-4">
 			<slot />
 		</div>
 	</div>

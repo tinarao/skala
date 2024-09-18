@@ -82,11 +82,11 @@ export async function PATCH({ request, cookies }) {
 		return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
 	}
 
-	const updated = await db.update(projects).set({
+	const created = await db.insert(projects).set({
 		name: payload.data.name,
 		remind: payload.data.remind,
 		percentage: payload.data.percentage
-	}).where(eq(projects.id, payload.data.id)).returning()
+	}).where(eq(projects.id, payload.data.id)).returning();
 
-	return new Response(JSON.stringify(updated), { status: 201 })
+	return new Response(JSON.stringify(created), { status: 201 })
 }	

@@ -5,6 +5,7 @@ import {
 	integer,
 	pgEnum,
 	pgTable,
+	primaryKey,
 	serial,
 	text,
 	varchar
@@ -26,8 +27,8 @@ export const users = pgTable('user', {
 
 export const usersRelations = relations(users, ({ many }) => ({
 	projects: many(projects, { relationName: "projects" }),
-	collaborations: many(projects, { relationName: "collaborations" }),
-	invitedTo: many(projects, { relationName: "invitedTo" })
+	// collaborations: many(projectToCollaborators, { relationName: "collaborations" }),
+	invitedTo: many(projectToInvitations, { relationName: "invitedTo" })
 }));
 
 export const projects = pgTable('project', {
@@ -51,8 +52,8 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
 		relationName: "projects"
 	}),
 	tasks: many(tasks),
-	collaborators: many(users, { relationName: "collaborations" }),
-	invitations: many(users, { relationName: "invitedTo" })
+	// collaborations: many(projectToCollaborators, { relationName: "collaborations" }),
+	invitations: many(projectToInvitations, { relationName: "invitedTo" })
 }));
 
 // Tasks
@@ -97,3 +98,62 @@ export const commentRelations = relations(comments, ({ one }) => ({
 		references: [users.id]
 	}),
 }))
+
+
+
+
+
+
+// export const projectToCollaborators = pgTable(
+// 	'projectToCollaborators',
+// 	{
+// 		userId: integer('userId')
+// 			.notNull()
+// 			.references(() => users.id),
+// 		projectId: integer('projectId')
+// 			.notNull()
+// 			.references(() => projects.id),
+// 	},
+// 	(t) => ({
+// 		pk: primaryKey({ columns: [t.userId, t.projectId] }),
+// 	}),
+// );
+
+// export const projectToCollaboratorsRelation = relations(projectToCollaborators, ({ one }) => ({
+// 	project: one(projects, {
+// 		fields: [projectToCollaborators.projectId],
+// 		references: [projects.id],
+// 	}),
+// 	user: one(users, {
+// 		fields: [projectToCollaborators.userId],
+// 		references: [users.id],
+// 	}),
+// }));
+
+
+
+export const projectToInvitations = pgTable(
+	'projectToCollaborators',
+	{
+		userId: integer('userId')
+			.notNull()
+			.references(() => users.id),
+		projectId: integer('projectId')
+			.notNull()
+			.references(() => projects.id),
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.userId, t.projectId] }),
+	}),
+);
+
+export const projectToInvitationsRelation = relations(projectToInvitations, ({ one }) => ({
+	project: one(projects, {
+		fields: [projectToInvitations.projectId],
+		references: [projects.id],
+	}),
+	user: one(users, {
+		fields: [projectToInvitations.userId],
+		references: [users.id],
+	}),
+}));

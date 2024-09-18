@@ -3,6 +3,7 @@
 	import AvatarPlaceholder from '../../../assets/avatar-ph.jpg';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import { userStore } from '$lib/user';
+	import { goto } from '$app/navigation';
 
 	/** @type {HTMLInputElement} */
 	let input;
@@ -15,7 +16,6 @@
 	let picToUpload = undefined;
 
 	export let data;
-	console.log(data);
 
 	function handleSelectFile() {
 		if (!input.files) {
@@ -50,7 +50,11 @@
 		});
 
 		const resData = await res.json();
-		console.log(resData);
+	}
+
+	async function handleLogout() {
+		await fetch('/api/auth/logout', { method: 'POST' });
+		goto('/login');
 	}
 </script>
 
@@ -79,3 +83,4 @@
 	{/if}
 </div>
 <h1>{$userStore.username}</h1>
+<Button on:click={handleLogout} variant="destructive">Выйти</Button>

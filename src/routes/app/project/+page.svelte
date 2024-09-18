@@ -6,6 +6,8 @@
 	import { taskStatus } from '$lib/db/enums';
 	import { toast } from 'svelte-sonner';
 	import EditProjectDialog from '$lib/components/edit-project-dialog.svelte';
+	import InvitePopover from '$lib/components/projects/invite-popover.svelte';
+	import InvitationsListPopover from '$lib/components/projects/invitations-list-popover.svelte';
 
 	export let data;
 	// // Попробую когда-нибудь починить это уёбище
@@ -44,7 +46,6 @@
 		});
 
 		if (!res.ok) {
-			const resData = await res.json();
 			toast.error('Ошибка при изменении статуса задачи. Попробуйте позже.');
 			return;
 		}
@@ -57,9 +58,15 @@
 
 <title>Проект {data.project.name} - Skala</title>
 <div class="flex flex-col h-full">
-	<header class="flex justify-between items-center border-b py-1">
+	<header class="flex justify-between items-center border-b py-2">
 		<h3 title="Название проекта" class="font-medium text-xl">{data.project.name}</h3>
-		<EditProjectDialog project={data.project} />
+		<div class="flex gap-x-2 items-center">
+			<div class="flex items-center gap-x-2 border-r pr-2">
+				<InvitationsListPopover projectId={data.project.id} invites={data.invites} />
+				<InvitePopover projectId={data.project.id} />
+			</div>
+			<EditProjectDialog project={data.project} />
+		</div>
 	</header>
 	<div id="dnd-cols-wrapper" class="grid grid-cols-4 gap-x-4 flex-1">
 		<div

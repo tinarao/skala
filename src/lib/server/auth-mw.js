@@ -1,8 +1,11 @@
 
 import { redis } from "$lib/redis";
 
-/** @returns {bool} - ```true``` if user checked successfully, else ```false``` */
-/** @param {import("@sveltejs/kit").Cookies} cookies */
+/**
+ * 
+ * @param {import("@sveltejs/kit").Cookies} cookies - ```RequestHandler.cookies``` object
+ * @returns {Promise<boolean>} - ```true``` if user checked successfully, else ```false```
+ */
 export async function authMiddleware(cookies) {
     const cookieId = cookies.get("id");
     const cookieSid = cookies.get("session_id");
@@ -12,6 +15,10 @@ export async function authMiddleware(cookies) {
     }
 
     if (!cookieSid) {
+        return false
+    }
+
+    if (isNaN(parseInt(cookieId))) {
         return false
     }
 

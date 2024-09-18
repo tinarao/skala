@@ -29,4 +29,11 @@
  * @property {Date | string | null} createdAt
  */
 
+/**
+ * @typedef {Object} UserPicNameId
+ * @property {number} id
+ * @property {string | null} picture
+ * @property {string} username
+ */
+
 module.exports = {};

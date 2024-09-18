@@ -16,7 +16,6 @@
 		const res = await fetch(`/api/projects/tasks/comments?task=${taskId}`);
 		const resData = await res.json();
 
-		console.log(resData);
 		comments = resData.comments;
 	});
 
