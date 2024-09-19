@@ -1,9 +1,10 @@
 <script>
+	import { toast } from 'svelte-sonner';
 	import { goto } from '$app/navigation';
-	import Button from '$lib/components/ui/button/button.svelte';
+	import Icon from 'lucide-svelte/icons/hand-heart';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import { toast } from 'svelte-sonner';
+	import Button from '$lib/components/ui/button/button.svelte';
 
 	/** @type {string}*/
 	let username;
@@ -30,7 +31,7 @@
 			});
 
 			const regResData = await regResponse.json();
-			if (!regResData.ok) {
+			if (!regResponse.ok) {
 				toast.error(regResData.message);
 				return;
 			}
@@ -69,16 +70,19 @@
 <h1 class="text-2xl font-medium">Регистрация</h1>
 <div>
 	<Label>Имя пользователя</Label>
-	<Input class="w-96" bind:value={username} />
+	<Input disabled={isLoading} class="w-96" bind:value={username} />
 </div>
 <div>
 	<Label>Пароль</Label>
-	<Input type="password" class="w-96" bind:value={password} />
+	<Input disabled={isLoading} type="password" class="w-96" bind:value={password} />
 </div>
 
 <hr class="my-2" />
 
 <div class="flex justify-between">
-	<Button on:click={handleRegister}>Зарегистрироваться</Button>
-	<Button variant="link" href="/login">У меня есть аккаунт</Button>
+	<Button disabled={isLoading} on:click={handleRegister}>
+		<Icon class="size-4 mr-2" />
+		Зарегистрироваться
+	</Button>
+	<Button disabled={isLoading} variant="link" href="/login">У меня есть аккаунт</Button>
 </div>

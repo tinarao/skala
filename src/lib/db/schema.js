@@ -52,7 +52,7 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
 		relationName: "projects"
 	}),
 	tasks: many(tasks),
-	// collaborations: many(projectToCollaborators, { relationName: "collaborations" }),
+	collaborations: many(projectToCollaborators, { relationName: "collaborations" }),
 	invitations: many(projectToInvitations, { relationName: "invitedTo" })
 }));
 
@@ -102,38 +102,36 @@ export const commentRelations = relations(comments, ({ one }) => ({
 
 
 
+export const projectToCollaborators = pgTable(
+	'projectToCollaborators',
+	{
+		userId: integer('userId')
+			.notNull()
+			.references(() => users.id),
+		projectId: integer('projectId')
+			.notNull()
+			.references(() => projects.id),
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.userId, t.projectId] }),
+	}),
+);
 
-
-// export const projectToCollaborators = pgTable(
-// 	'projectToCollaborators',
-// 	{
-// 		userId: integer('userId')
-// 			.notNull()
-// 			.references(() => users.id),
-// 		projectId: integer('projectId')
-// 			.notNull()
-// 			.references(() => projects.id),
-// 	},
-// 	(t) => ({
-// 		pk: primaryKey({ columns: [t.userId, t.projectId] }),
-// 	}),
-// );
-
-// export const projectToCollaboratorsRelation = relations(projectToCollaborators, ({ one }) => ({
-// 	project: one(projects, {
-// 		fields: [projectToCollaborators.projectId],
-// 		references: [projects.id],
-// 	}),
-// 	user: one(users, {
-// 		fields: [projectToCollaborators.userId],
-// 		references: [users.id],
-// 	}),
-// }));
+export const projectToCollaboratorsRelation = relations(projectToCollaborators, ({ one }) => ({
+	project: one(projects, {
+		fields: [projectToCollaborators.projectId],
+		references: [projects.id],
+	}),
+	user: one(users, {
+		fields: [projectToCollaborators.userId],
+		references: [users.id],
+	}),
+}));
 
 
 
 export const projectToInvitations = pgTable(
-	'projectToCollaborators',
+	'projectToInvitations',
 	{
 		userId: integer('userId')
 			.notNull()
