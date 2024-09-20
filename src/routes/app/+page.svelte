@@ -1,9 +1,11 @@
 <script>
+	import * as Dialog from '$lib/components/ui/dialog';
 	import Button from '$lib/components/ui/button/button.svelte';
 	import Placeholder from '../../assets/project-ph.jpg';
 	import Plus from 'lucide-svelte/icons/plus';
 	import { Progress } from '$lib/components/ui/progress';
 	import { userStore } from '$lib/user';
+	import CreateProjectForm from '$lib/components/projects/create-project-form.svelte';
 
 	export let data;
 </script>
@@ -32,9 +34,19 @@
 			{/each}
 		{/if}
 		<div class="col-span-1 h-16 rounded-md">
-			<Button variant="ghost" class="size-full">
-				<Plus />
-			</Button>
+			<Dialog.Root>
+				<Dialog.Trigger asChild let:builder>
+					<Button builders={[builder]} variant="ghost" class="size-full">
+						<Plus />
+					</Button>
+				</Dialog.Trigger>
+				<Dialog.Content>
+					<Dialog.Header>
+						<Dialog.Title>Создать проект</Dialog.Title>
+					</Dialog.Header>
+					<CreateProjectForm />
+				</Dialog.Content>
+			</Dialog.Root>
 		</div>
 	</div>
 

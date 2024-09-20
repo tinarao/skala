@@ -1,15 +1,14 @@
 import { db } from '$lib/db/db';
-import { nanoid } from 'nanoid';
 import { redis } from '$lib/redis';
 import { z } from 'zod';
-import { projects, users } from '$lib/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { projects } from '$lib/db/schema';
+import { eq } from 'drizzle-orm';
 import { projectValidator } from '$lib/validators';
 
 const CreateProjectDTO = z.object({
 	name: z.ostring(),
 	remind: z.boolean().default(false),
-	deadline: z.coerce.date({ message: 'Некорректная дата' })
+	deadline: z.coerce.date({ message: 'Некорректная дата' }).optional()
 });
 
 /** @type {import('./$types').RequestHandler} */
@@ -49,7 +48,7 @@ export async function POST({ request, cookies }) {
 
 	const saved = await db.insert(projects).values({
 		name: values.name ?? `Проект №${user?.projects.length}`,
-		deadline: values.deadline.toISOString(),
+		deadline: values.deadline ? values.deadline.toISOString() : null,
 		createdAt: new Date().toISOString(),
 		authorId: user.id,
 		percentage: 0,

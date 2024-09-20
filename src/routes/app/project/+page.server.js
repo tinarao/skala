@@ -1,6 +1,7 @@
 import { db } from '$lib/db/db';
 import { authMiddleware } from '$lib/server/auth-mw';
 import { redirect } from '@sveltejs/kit';
+import { and } from 'drizzle-orm';
 
 // get project
 // get invites
@@ -49,8 +50,20 @@ async function getProjectDetails(projectId, userId) {
 		}
 	});
 
-	if (!project || project.authorId !== userId) {
+	if (!project) {
 		redirect(302, '/app');
+	}
+
+	if (project.authorId !== userId) {
+		const collaborators = await db.query.projectToCollaborators.findFirst({
+			where: ( clb, { eq }) => and(
+				eq(clb.projectId, projectId),
+				eq(clb.userId, userId)
+			)
+		});
+		if (!collaborators) {
+			return redirect(302, "/app")
+		}
 	}
 
 	return project;
@@ -63,11 +76,11 @@ export async function load({ url, depends }) {
 	const userId = url.searchParams.get('u');
 
 	if (!projectId) {
-		return redirect(302, '/login');
+		return redirect(302, '/app');
 	}
 
 	if (!userId) {
-		return redirect(302, '/login');
+		return redirect(302, '/app');
 	}
 
 	const [project, invites] = await Promise.all([
