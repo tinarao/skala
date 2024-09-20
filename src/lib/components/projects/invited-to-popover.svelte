@@ -32,6 +32,35 @@
 			invalidateAll();
 		}
     }
+
+/** @param {number} projectId*/
+    async function handleAcceptInvite(projectId) {
+        isLoading = true
+
+        try {
+            const res = await fetch("/api/projects/invitations", {
+            method: "PATCH",
+            body: JSON.stringify({
+                projectId: projectId,
+                userId: $userStore.id
+            })
+        })
+
+        const resData = await res.json();
+        if (!res.ok) {
+            toast.error(resData.message);
+            return;
+        }
+
+        toast.success("Успешно!");
+        console.log(resData);
+        await invalidateAll();
+        return;
+
+        } finally {
+            isLoading = false;
+        }
+    }
 </script>
 
 <Popover.Root>
@@ -69,8 +98,8 @@
                 Готов на {invite.project.percentage}%
             </span>
             <div class="flex items-center justify-center gap-x-2">
-                <Button class="hover:bg-green-400 w-full" size="sm" variant="outline">Принять</Button>
-                <Button class="hover:bg-red-400 w-full" size="sm" variant="outline" on:click={() => handleDeleteInvite(invite.projectId)} disabled={isLoading}>Отклонить</Button>
+                <Button disabled={isLoading} class="hover:bg-green-400 w-full" size="sm" variant="outline" on:click={() => handleAcceptInvite(invite.projectId)}>Принять</Button>
+                <Button disabled={isLoading} class="hover:bg-red-400 w-full" size="sm" variant="outline" on:click={() => handleDeleteInvite(invite.projectId)}>Отклонить</Button>
             </div>
         </div>
         {/each}

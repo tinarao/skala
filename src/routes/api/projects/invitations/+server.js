@@ -1,11 +1,17 @@
 import { db } from "$lib/db/db";
-import { projectToInvitations, users } from "$lib/db/schema";
+import { projectToCollaborators, projectToInvitations, users } from "$lib/db/schema";
 import { authMiddleware } from "$lib/server/auth-mw";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 
 const InviteDTO = z.object({
     projectId: z.number().positive(),
     userToInviteUsername: z.string()
+})
+
+const AcceptInviteDTO = z.object({
+    projectId: z.number().positive(),
+    userId: z.number().positive(),
 })
 
 /** @type {import("./$types").RequestHandler} */
@@ -63,6 +69,62 @@ export async function POST({ request, cookies }) {
     }).onConflictDoNothing();
 
     return new Response(JSON.stringify({ "message": "Пользователь приглашён!" }), { status: 201 })
+}
+
+// Accept invite endpoint
+/** @type {import("./$types").RequestHandler} */
+export async function PATCH({ request, cookies }) {
+    const {error, success, data: dto} = AcceptInviteDTO.safeParse(await request.json());
+    if (!success) {
+        return new Response(JSON.stringify(error.message), { status: 400 })
+    }
+
+    const cookieId = cookies.get('id');
+    if (!cookieId || isNaN(parseInt(cookieId)) || parseInt(cookieId) !== dto.userId) {
+        return new Response(JSON.stringify({ "message": "Не авторизован"}), { status: 401 })
+    }
+
+    if (!authMiddleware(cookies)) {
+        return new Response(JSON.stringify({ "message": "Не авторизован"}), { status: 401 })
+    }
+    
+    const txCode = await db.transaction(async (tx) => {
+        const invite = await tx.query.projectToInvitations.findFirst({
+            where: ( invite, { eq }) => and(
+                eq(invite.projectId, dto.projectId),
+                eq(invite.userId, dto.userId),
+            )
+        })
+        if (!invite) {
+            return 404;
+        }
+
+        const deleted = await tx.delete(projectToInvitations).where(and(
+            eq(projectToInvitations.projectId, dto.projectId),
+            eq(projectToInvitations.userId, dto.userId),
+        )).returning();
+
+        const collab = await tx.insert(projectToCollaborators).values({
+            userId: dto.userId,
+            projectId: dto.projectId
+        }).returning();
+
+        if (deleted.length === 0 || collab.length === 0) {
+            return 500
+        }
+
+        return 200;
+        
+    });
+
+    switch (txCode) {
+        case 404:
+            return new Response(JSON.stringify({"message": "Приглашение не найдено"}), { status: 404 });
+        case 500:
+            return new Response(JSON.stringify({"message": "Внутренняя ошибка сервера"}), { status: 500 });
+        case 200:
+            return new Response(JSON.stringify({"message": "Ок!"}), { status: 200 })
+    }
 }
 
 /** @type {import("./$types").RequestHandler} */

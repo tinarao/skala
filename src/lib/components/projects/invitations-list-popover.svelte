@@ -46,7 +46,7 @@
 		</p>
 		<div>
 			{#each invites as user}
-				<div class="flex justify-between items-center group h-12 rounded-md bg-neutral-700 p-2">
+				<div class="flex justify-between items-center group h-12 rounded-md bg-neutral-900 p-2">
 					<div class="flex items-center gap-x-2">
 						<img
 							src={user.picture ?? AvatarPlaceholder}

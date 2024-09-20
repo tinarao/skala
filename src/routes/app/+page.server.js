@@ -17,7 +17,7 @@ export async function load({ cookies }) {
 				projects: true,
 			}
 		}),
-		db.db.query.projectToInvitations.findMany({
+		db.db.query.projectToCollaborators.findMany({
 			where: ( collab, { eq }) => eq(collab.userId, parseInt(userId)),
 			with: { project: true }
 		})

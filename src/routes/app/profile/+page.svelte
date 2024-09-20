@@ -15,9 +15,12 @@
 	/** @type {File | undefined} */
 	let picToUpload = undefined;
 
+	let isLoading = false;
+
 	export let data;
 
 	function handleSelectFile() {
+		isLoading = true
 		if (!input.files) {
 			return;
 		}
@@ -33,10 +36,12 @@
 		isAvatarChanged = true;
 
 		picToUpload = file;
+		isLoading = false
 		return;
 	}
 
 	async function handleSaveChanges() {
+		isLoading = true
 		if (!picToUpload) {
 			return;
 		}
@@ -50,11 +55,14 @@
 		});
 
 		const resData = await res.json();
+		isLoading = false
 	}
 
 	async function handleLogout() {
+		isLoading = true
 		await fetch('/api/auth/logout', { method: 'POST' });
 		goto('/login');
+		isLoading = false
 	}
 </script>
 
@@ -75,12 +83,12 @@
 	class="hidden"
 />
 <div class="flex items-center">
-	<Button on:click={() => input.click()}>
+	<Button disabled={isLoading} on:click={() => input.click()}>
 		<Upload class="size-4 mr-2" /> Выбрать файл
 	</Button>
 	{#if isAvatarChanged}
-		<Button on:click={handleSaveChanges}>Сохранить</Button>
+		<Button disabled={isLoading} on:click={handleSaveChanges}>Сохранить</Button>
 	{/if}
 </div>
 <h1>{$userStore.username}</h1>
-<Button on:click={handleLogout} variant="destructive">Выйти</Button>
+<Button disabled={isLoading} on:click={handleLogout} variant="destructive">Выйти</Button>
