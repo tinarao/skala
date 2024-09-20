@@ -24,39 +24,42 @@
 	});
 
 	async function submit() {
-		if (!date) {
-			return;
-		}
-
-		const values = {
-			deadline: new Date(date.toString()),
-			// deadline: 'sosi',
-			remind,
-			name
-		};
-
-		const res = await fetch('/api/projects', {
-			method: 'POST',
-			body: JSON.stringify(values)
-		});
-
-		const resData = await res.json();
-		if (res.status !== 201) {
-			if (res.status === 400) {
-				toast.error('Вы заполнили все поля? Точно?');
+		try {
+			if (!date) {
 				return;
 			}
 
-			if (res.status === 401) {
-				await fetch('/api/auth/logout', { method: 'POST' });
-				goto('/login');
+			const values = {
+				deadline: new Date(date.toString()),
+				// deadline: 'sosi',
+				remind,
+				name
+			};
+
+			const res = await fetch('/api/projects', {
+				method: 'POST',
+				body: JSON.stringify(values)
+			});
+
+			const resData = await res.json();
+			if (res.status !== 201) {
+				if (res.status === 400) {
+					toast.error('Вы заполнили все поля? Точно?');
+					return;
+				}
+
+				if (res.status === 401) {
+					await fetch('/api/auth/logout', { method: 'POST' });
+					goto('/login');
+				}
 			}
+
+			toast.success('Проект создан!');
+
+			return;
+		} finally {
+			goto('/app');
 		}
-
-		toast.success('Проект создан!');
-
-		goto('/app');
-		return;
 	}
 </script>
 

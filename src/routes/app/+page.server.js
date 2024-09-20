@@ -10,12 +10,19 @@ export async function load({ cookies }) {
 		return;
 	}
 
-	const userDoc = await db.db.query.users.findFirst({
-		where: (user, { eq }) => eq(user.id, parseInt(userId)),
-		with: {
-			projects: true
-		}
-	});
+	const [userDoc, collabs] = await Promise.all([
+		db.db.query.users.findFirst({
+			where: (user, { eq }) => eq(user.id, parseInt(userId)),
+			with: {
+				projects: true,
+			}
+		}),
+		db.db.query.projectToInvitations.findMany({
+			where: ( collab, { eq }) => eq(collab.userId, parseInt(userId)),
+			with: { project: true }
+		})
+	])
+
 	if (!userDoc) {
 		redirect(302, '/login');
 		return;
@@ -26,5 +33,5 @@ export async function load({ cookies }) {
 		return;
 	}
 
-	return { projects: userDoc.projects };
+	return { projects: userDoc.projects, collabs: collabs };
 }

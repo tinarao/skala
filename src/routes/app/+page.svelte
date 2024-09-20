@@ -9,7 +9,7 @@
 </script>
 
 <title>Проекты - Skala</title>
-<div class="h-full">
+<div class="h-full py-2">
 	<h1 class="text-4xl font-medium">Ваши проекты</h1>
 
 	<div class="grid grid-cols-4 gap-4 py-4">
@@ -37,4 +37,28 @@
 			</Button>
 		</div>
 	</div>
+
+	{#if data.collabs && data.collabs.length}
+		<h3>Совместная работа</h3>
+		<div class="grid grid-cols-4 gap-4 py-4">
+			{#if data.projects?.length && data.projects !== undefined}
+				{#each data.collabs as collab}
+					<a
+						href="/app/project?id={collab.project.id}&u={$userStore.id}"
+						class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
+					>
+						<img src={Placeholder} alt="Проект {collab.project.name}" />
+						<div class="p-2">
+							<h6 class="font-medium text-lg">{collab.project.name}</h6>
+						</div>
+						<hr class="my-1" />
+						<div class="p-2 mb-3 space-y-1">
+							<span class="font-medium">Прогресс: {collab.project.percentage}%</span>
+							<Progress value={collab.project.percentage} />
+						</div>
+					</a>
+				{/each}
+			{/if}
+		</div>
+	{/if}
 </div>

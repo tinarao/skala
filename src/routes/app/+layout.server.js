@@ -3,6 +3,18 @@ import { redis } from '$lib/redis';
 import { utapi } from '$lib/server/ut';
 import { redirect } from '@sveltejs/kit';
 
+/**
+ * @param {number} userId 
+ */
+async function getInvites(userId) {
+	const invites = await db.query.projectToInvitations.findMany({
+		where: ( invite, { eq }) => eq(invite.userId, userId),
+		with: { project: true}
+	});
+
+	return invites
+}
+
 /** @type {import('./$types').LayoutServerLoad} */
 export async function load({ cookies }) {
 	try {
@@ -21,9 +33,13 @@ export async function load({ cookies }) {
 			throw new Error()
 		}
 
-		const userDoc = await db.query.users.findFirst({
-			where: (user, { eq }) => eq(user.id, parseInt(cookieId))
-		})
+		const [userDoc, invites] = await Promise.all([
+			db.query.users.findFirst({
+				where: (user, { eq }) => eq(user.id, parseInt(cookieId))
+			}),
+			getInvites(parseInt(cookieId)),
+		])
+
 		if (!userDoc) {
 			throw new Error()
 		}
@@ -44,8 +60,9 @@ export async function load({ cookies }) {
 
 		const { sessionId, password, ...user } = userDoc;
 
-		return { user: user }
+		return { user, invites }
 	} catch (error) {
+		console.error(error)
 		cookies.delete('session_id', { path: '/' });
 		cookies.delete('id', { path: '/' })
 

@@ -12,7 +12,7 @@
  * @typedef {Object} Project
  * @property {number| null} id
  * @property {string | null} name
- * @property {number| null} [precentage]
+ * @property {number| null} [percentage]
  * @property {number | null} authorId
  * @property {boolean| null} remind
  * @property {Date | string | null} deadline
@@ -34,6 +34,13 @@
  * @property {number} id
  * @property {string | null} picture
  * @property {string} username
+ */
+
+/**
+ * @typedef {Object} Invite
+ * @property {number} projectId
+ * @property {number} userId
+ * @property {Project} project
  */
 
 module.exports = {};

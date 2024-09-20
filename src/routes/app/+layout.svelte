@@ -1,10 +1,11 @@
 <script>
 	import * as Card from '$lib/components/ui/card';
 
-	import Button from '$lib/components/ui/button/button.svelte';
 	import { userStore } from '$lib/user.js';
+	import Button from '$lib/components/ui/button/button.svelte';
 	import Brackets from 'lucide-svelte/icons/brackets';
 	import AvatarPlaceholder from '../../assets/avatar-ph.jpg';
+	import InvitedToPopover from "$lib/components/projects/invited-to-popover.svelte";
 
 	export let data;
 	$userStore = data.user;
@@ -25,6 +26,7 @@
 				<Button size="lg" class="justify-start w-full" variant="ghost" href="/app">
 					<Brackets class="size-5 mr-2" /> Проекты
 				</Button>
+				<InvitedToPopover invites={data.invites} />
 			</div>
 			<Card.Root class="bg-background text-text">
 				<Card.Header>

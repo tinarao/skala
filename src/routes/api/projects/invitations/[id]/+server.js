@@ -7,6 +7,12 @@ import { and, eq } from "drizzle-orm";
 export async function DELETE({ cookies, params, url }) {
     const projectId = params.id;
     const userId = url.searchParams.get('user');
+
+    const cookieId = cookies.get('id');
+    if (!cookieId) {
+        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
+    }
+
     if (!userId) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
     }
@@ -14,11 +20,17 @@ export async function DELETE({ cookies, params, url }) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
     }
 
+    if (parseInt(cookieId) !== parseInt(userId)) {
+        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
+    }
+
     if (isNaN(parseInt(projectId))) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
     }
 
-    // eq(inv.projectId, parseInt(projectId))
+    if (!authMiddleware(cookies)) {
+        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
+    }
 
     const invite = await db.query.projectToInvitations.findFirst({
         where: (invite, { eq }) => and(
