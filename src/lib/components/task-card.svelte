@@ -34,7 +34,7 @@
 </script>
 
 <Collapsible.Root>
-	<div role="listitem" id="task-{task.id}" draggable="true" class="task-card p-2 border rounded-md">
+	<article role="listitem" id="task-{task.id}" draggable="true" class="task-card p-2 border rounded-md">
 		<span class="hidden" aria-hidden="true">{task.id}</span>
 		<div class="flex items-center justify-between flex-shrink">
 			<h6 class="font-medium">{task.name}</h6>
@@ -64,6 +64,6 @@
 				</div>
 			</Collapsible.Content>
 		{/if}
-	</div>
+	</article>
 </Collapsible.Root>
 <!-- </div> -->

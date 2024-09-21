@@ -88,4 +88,4 @@ export async function PATCH({ request, cookies }) {
 	}).where(eq(projects.id, payload.data.id)).returning();
 
 	return new Response(JSON.stringify(created), { status: 201 })
-}	
+}

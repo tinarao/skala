@@ -1,5 +1,6 @@
 import { goto } from '$app/navigation';
 import * as db from '$lib/db/db';
+import { utapi } from '$lib/server/ut';
 import { redirect } from '@sveltejs/kit';
 
 /** @type {import("./$types").PageServerLoad} */
@@ -31,6 +32,16 @@ export async function load({ cookies }) {
 	if (userDoc.projects.length === 0) {
 		redirect(302, '/app/create');
 		return;
+	}
+
+	for (let project of userDoc.projects) {
+		if (project.picture) {
+			const url = await utapi.getSignedURL(project.picture, {
+				expiresIn: '7 days',
+			});
+	
+			project.picture = url.url
+		}
 	}
 
 	return { projects: userDoc.projects, collabs: collabs };

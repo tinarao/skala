@@ -8,6 +8,7 @@
 	import EditProjectDialog from '$lib/components/edit-project-dialog.svelte';
 	import InvitePopover from '$lib/components/projects/invite-popover.svelte';
 	import InvitationsListPopover from '$lib/components/projects/invitations-list-popover.svelte';
+	import ChangeAvatarDialog from "$lib/components/projects/change-avatar-dialog.svelte";
 
 	export let data;
 	// // Попробую когда-нибудь починить это уёбище
@@ -58,6 +59,9 @@
 
 <title>Проект {data.project.name} - Skala</title>
 <div class="flex flex-col h-full">
+	<div class="h-32 bg-red-200">
+		<img src={data.project.picture} alt="" class="size-full object-cover" />
+	</div>
 	<header class="flex justify-between items-center border-b py-2">
 		<h3 title="Название проекта" class="font-medium text-xl">{data.project.name}</h3>
 		<div class="flex gap-x-2 items-center">
@@ -66,6 +70,7 @@
 				<InvitePopover projectId={data.project.id} />
 			</div>
 			<EditProjectDialog project={data.project} />
+			<ChangeAvatarDialog projectId={data.project.id} />
 		</div>
 	</header>
 	<div id="dnd-cols-wrapper" class="grid grid-cols-4 gap-x-4 flex-1">

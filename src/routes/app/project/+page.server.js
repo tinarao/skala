@@ -1,5 +1,5 @@
 import { db } from '$lib/db/db';
-import { authMiddleware } from '$lib/server/auth-mw';
+import { utapi } from '$lib/server/ut';
 import { redirect } from '@sveltejs/kit';
 import { and } from 'drizzle-orm';
 
@@ -56,7 +56,7 @@ async function getProjectDetails(projectId, userId) {
 
 	if (project.authorId !== userId) {
 		const collaborators = await db.query.projectToCollaborators.findFirst({
-			where: ( clb, { eq }) => and(
+			where: (clb, { eq }) => and(
 				eq(clb.projectId, projectId),
 				eq(clb.userId, userId)
 			)
@@ -87,6 +87,14 @@ export async function load({ url, depends }) {
 		getProjectDetails(parseInt(projectId), parseInt(userId)),
 		getInvites(parseInt(projectId))
 	])
+
+	if (project.picture) {
+		const url = await utapi.getSignedURL(project.picture, {
+			expiresIn: '7 days',
+		});
+
+		project.picture = url.url
+	}
 
 	return { project, invites }
 }

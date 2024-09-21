@@ -16,7 +16,7 @@ const AcceptInviteDTO = z.object({
 
 /** @type {import("./$types").RequestHandler} */
 export async function POST({ request, cookies }) {
-    if (!authMiddleware(cookies)) {
+    if (!(await authMiddleware(cookies))) {
         return await fetch("/api/auth/logout", { method: "POST " });
     }
 
@@ -84,7 +84,7 @@ export async function PATCH({ request, cookies }) {
         return new Response(JSON.stringify({ "message": "Не авторизован"}), { status: 401 })
     }
 
-    if (!authMiddleware(cookies)) {
+    if (!(await authMiddleware(cookies))) {
         return new Response(JSON.stringify({ "message": "Не авторизован"}), { status: 401 })
     }
     
@@ -140,7 +140,7 @@ export async function GET({ url, cookies }) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
     }
 
-    if (!authMiddleware(cookies)) {
+    if (!(await authMiddleware(cookies))) {
         return await fetch("/api/auth/logout", { method: "POST " });
     }
 

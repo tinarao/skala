@@ -28,7 +28,7 @@ export async function DELETE({ cookies, params, url }) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
     }
 
-    if (!authMiddleware(cookies)) {
+    if (!(await authMiddleware(cookies))) {
         return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
     }
 
