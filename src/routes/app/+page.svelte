@@ -21,7 +21,9 @@
 					href="/app/project?id={project.id}&u={$userStore.id}"
 					class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
 				>
-					<img src={project.picture ?? Placeholder} alt="Проект {project.name}" />
+					<div class="h-60 w-full">
+						<img class="size-full object-cover" src={project.picture ?? Placeholder} alt="Проект {project.name}" />
+					</div>
 					<div class="p-2">
 						<h6 class="font-medium text-lg">{project.name}</h6>
 					</div>

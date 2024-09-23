@@ -59,9 +59,6 @@
 
 <title>Проект {data.project.name} - Skala</title>
 <div class="flex flex-col h-full">
-	<div class="h-32 bg-red-200">
-		<img src={data.project.picture} alt="" class="size-full object-cover" />
-	</div>
 	<header class="flex justify-between items-center border-b py-2">
 		<h3 title="Название проекта" class="font-medium text-xl">{data.project.name}</h3>
 		<div class="flex gap-x-2 items-center">

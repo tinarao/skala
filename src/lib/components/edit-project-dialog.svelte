@@ -2,6 +2,8 @@
 	import * as Dialog from '$lib/components/ui/dialog';
 	import Button from './ui/button/button.svelte';
 	import Pen from 'lucide-svelte/icons/pen-line';
+	import SaveIcon from 'lucide-svelte/icons/save';
+	import LoaderCircle from 'lucide-svelte/icons/loader-circle';
 	import Input from './ui/input/input.svelte';
 	import { Label } from './ui/label';
 	import { toast } from 'svelte-sonner';
@@ -10,6 +12,7 @@
 	/** @type {import ("$lib/typedefs").Project}*/
 	export let project;
 
+	let isLoading = false;
 	let name = project.name ?? 'Проект';
 
 	async function handleSaveChanges() {
@@ -50,13 +53,20 @@
 		</Dialog.Header>
 		<div>
 			<Label>Переименовать проект</Label>
-			<Input bind:value={name} />
+			<Input disabled={isLoading} bind:value={name} />
 		</div>
 		<hr class="my-1" />
 		<div class="flex items-center justify-between">
-			<Button on:click={handleSaveChanges}>Сохранить</Button>
+			<Button on:click={handleSaveChanges}>
+				{#if isLoading}
+					<LoaderCircle class="size-4 mr-2 animate-spin" />
+				{:else}
+					<SaveIcon class="size-4 mr-2" />
+				{/if}
+				Сохранить
+			</Button>
 			<Dialog.Close asChild let:builder>
-				<Button variant="destructive" builders={[builder]}>Отменить</Button>
+				<Button disabled={isLoading} variant="destructive" builders={[builder]}>Отменить</Button>
 			</Dialog.Close>
 		</div>
 	</Dialog.Content>
