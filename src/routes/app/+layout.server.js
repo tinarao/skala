@@ -8,8 +8,8 @@ import { redirect } from '@sveltejs/kit';
  */
 async function getInvites(userId) {
 	const invites = await db.query.projectToInvitations.findMany({
-		where: ( invite, { eq }) => eq(invite.userId, userId),
-		with: { project: true}
+		where: (invite, { eq }) => eq(invite.userId, userId),
+		with: { project: true }
 	});
 
 	return invites
@@ -62,7 +62,6 @@ export async function load({ cookies }) {
 
 		return { user, invites }
 	} catch (error) {
-		console.error(error)
 		cookies.delete('session_id', { path: '/' });
 		cookies.delete('id', { path: '/' })
 
