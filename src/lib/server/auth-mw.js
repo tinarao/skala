@@ -1,5 +1,7 @@
 
+import { db } from "$lib/db/db";
 import { redis } from "$lib/redis";
+import { and } from "drizzle-orm";
 
 /**
  * 
