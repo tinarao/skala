@@ -11,7 +11,7 @@ import { persisted } from 'svelte-persisted-store';
  */
 
 /** @type {UserState} */
-let initialState = {
+export let initialState = {
 	id: undefined,
 	username: undefined,
 	picture: undefined,

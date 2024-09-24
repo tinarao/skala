@@ -56,6 +56,8 @@
 		} finally {
 			await invalidateAll();
 			isLoading = false;
+
+			goto('/app');
 		}
 	}
 </script>

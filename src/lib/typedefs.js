@@ -28,7 +28,7 @@
  * @property {string | null} body
  * @property {number | null} [likes] // delete
  * @property {Date | string | null} createdAt
- * @property { UserPicNameId } author
+ * @property { UserPicNameId | null } author
  */
 
 /**

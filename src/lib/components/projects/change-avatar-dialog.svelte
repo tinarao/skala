@@ -41,24 +41,24 @@
 		return;
 	}
 
-    async function handleSaveChanges() {
-		isLoading = true
+	async function handleSaveChanges() {
+		isLoading = true;
 		if (!picToUpload) {
 			return;
 		}
 
 		const formdata = new FormData();
 		formdata.append('file', picToUpload);
-        formdata.append('projectId', projectId.toString())
+		formdata.append('projectId', projectId.toString());
 
-		const res = await fetch('/api/projects/artwork', {
+		await fetch('/api/projects/artwork', {
 			method: 'PATCH',
 			body: formdata
 		});
 
-		isLoading = false
+		isLoading = false;
 		await invalidateAll();
-		toast.success("Сохранено!");
+		toast.success('Сохранено!');
 
 		return;
 	}
@@ -78,9 +78,16 @@
 			<Dialog.Title>Изменение заставки</Dialog.Title>
 			<Dialog.Description>Выберите изображение</Dialog.Description>
 		</Dialog.Header>
+		{#if newArtworkUrl && isAvatarChanged}
+			<img src={newArtworkUrl} class="w-[600px] mx-auto" alt="Новая обложка проекта" />
+		{/if}
 		<div class="flex items-center justify-between">
 			<Button disabled={isLoading} on:click={() => input.click()}>
-				<Upload class="size-4 mr-2" /> Выбрать файл
+				{#if isLoading}
+					<LoaderIcon class="size-4 mr-2 animate-spin" /> Загрузка
+				{:else}
+					<Upload class="size-4 mr-2" /> Выбрать файл
+				{/if}
 			</Button>
 			<input
 				on:input={handleSelectFile}
@@ -90,20 +97,20 @@
 				aria-hidden="true"
 				class="hidden"
 			/>
-			<Button
-				on:click={handleSaveChanges}
-				variant={!(isAvatarChanged && newArtworkUrl) ? 'outline' : 'default'}
-				disabled={!(isAvatarChanged && newArtworkUrl) || isLoading}
-				class="w-32"
-			>
-				{#if isAvatarChanged && newArtworkUrl}
-					<Save class="size-4 mr-2" /> Сохранить
-				{:else if isLoading}
-					<LoaderIcon class="size-4 mr-2 animate-spin" /> Загрузка
-				{:else}
-					<Clock class="size-4 mr-2" /> Ждём...
-				{/if}
-			</Button>
+			{#if isAvatarChanged && newArtworkUrl}
+				<Button
+					on:click={handleSaveChanges}
+					variant={!(isAvatarChanged && newArtworkUrl) ? 'outline' : 'default'}
+					disabled={!(isAvatarChanged && newArtworkUrl) || isLoading}
+					class="w-32"
+				>
+					{#if isLoading}
+						<LoaderIcon class="size-4 mr-2 animate-spin" /> Загрузка
+					{:else}
+						<Save class="size-4 mr-2" /> Сохранить
+					{/if}
+				</Button>
+			{/if}
 		</div>
 	</Dialog.Content>
 </Dialog.Root>

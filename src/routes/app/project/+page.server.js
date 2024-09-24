@@ -1,7 +1,8 @@
 import { db } from '$lib/db/db';
+import { projects, tasks } from '$lib/db/schema';
 import { utapi } from '$lib/server/ut';
 import { redirect } from '@sveltejs/kit';
-import { and } from 'drizzle-orm';
+import { and, count, eq } from 'drizzle-orm';
 
 // get project
 // get invites
@@ -81,6 +82,40 @@ async function getProjectDetails(projectId, userId) {
 	return project;
 }
 
+/** 
+ * @param {number} projectId
+*/
+async function getPercentage(projectId) {
+	const [tasksDoneCount, project] = await Promise.all([
+		db
+			.select({ count: count() })
+			.from(tasks)
+			.where(and(
+				eq(tasks.projectId, projectId),
+				eq(tasks.status, "done")
+			)),
+		db.query.projects.findFirst({
+			where: (project, { eq }) => eq(project.id, projectId),
+			with: { tasks: true }
+		})
+	])
+
+	if (!project) {
+		return redirect(302, '/app');
+	}
+
+	const percentage = parseFloat(
+		(tasksDoneCount[0].count / project?.tasks.length * 100).toFixed(2)
+	);
+	await db
+		.update(projects)
+		.set({ percentage })
+		.where(eq(projects.id, projectId))
+
+	return percentage
+}
+
+
 /** @type { import("./$types").PageServerLoad } */
 export async function load({ url, depends }) {
 	depends('tasks:fetch');
@@ -95,9 +130,10 @@ export async function load({ url, depends }) {
 		return redirect(302, '/app');
 	}
 
-	const [project, invites] = await Promise.all([
+	const [project, invites, percentage] = await Promise.all([
 		getProjectDetails(parseInt(projectId), parseInt(userId)),
-		getInvites(parseInt(projectId))
+		getInvites(parseInt(projectId)),
+		getPercentage(parseInt(projectId))
 	])
 
 	if (project.picture) {
@@ -108,5 +144,5 @@ export async function load({ url, depends }) {
 		project.picture = url.url
 	}
 
-	return { project, invites }
+	return { project, invites, percentage }
 }

@@ -8,11 +8,13 @@
 	import EditProjectDialog from '$lib/components/edit-project-dialog.svelte';
 	import InvitePopover from '$lib/components/projects/invite-popover.svelte';
 	import InvitationsListPopover from '$lib/components/projects/invitations-list-popover.svelte';
-	import ChangeAvatarDialog from "$lib/components/projects/change-avatar-dialog.svelte";
+	import ChangeAvatarDialog from '$lib/components/projects/change-avatar-dialog.svelte';
+	import { cn } from '$lib/utils.js';
 
 	export let data;
 	// // Попробую когда-нибудь починить это уёбище
 	// // Сейчас лениво
+	// UPD: 24.09, всё ещё лениво это украшать
 	$: done = data.project.tasks.filter((t) => t.status === 'done');
 	$: inProgress = data.project.tasks.filter((t) => t.status === taskStatus.InProgress);
 	$: notStarted = data.project.tasks.filter((t) => t.status === 'not_started');
@@ -62,6 +64,18 @@
 	<header class="flex justify-between items-center border-b py-2">
 		<h3 title="Название проекта" class="font-medium text-xl">{data.project.name}</h3>
 		<div class="flex gap-x-2 items-center">
+			<div class="pr-2 border-r">
+				<h4
+					class={cn(
+						'font-medium',
+						data.percentage === 100
+							? 'bg-gradient-to-r from-yellow-300 via-orange-300  to-amber-300 text-transparent bg-clip-text'
+							: ''
+					)}
+				>
+					Завершён на {isNaN(data.percentage) ? 0 : data.percentage}%
+				</h4>
+			</div>
 			<div class="flex items-center gap-x-2 border-r pr-2">
 				<InvitationsListPopover projectId={data.project.id} invites={data.invites} />
 				<InvitePopover projectId={data.project.id} />

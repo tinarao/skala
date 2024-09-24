@@ -3,16 +3,25 @@
 	import { toast } from 'svelte-sonner';
 	import { Label } from './ui/label';
 	import { Textarea } from './ui/textarea';
-	import { goto, invalidate } from '$app/navigation';
+	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import Button from './ui/button/button.svelte';
 	import TaskComments from './tasks/task-comments.svelte';
 	import { onMount } from 'svelte';
+	import { LoaderCircle } from 'lucide-svelte';
 
 	/** @type {import("$lib/typedefs").Task}*/
 	export let task;
 
+	let isLoading = false;
 	let isEditingDescription = false;
 	let desc = task.description;
+
+	onMount(() => {
+		if (!task.id) {
+			goto('/app');
+			return;
+		}
+	});
 
 	async function editDescription() {
 		const res = await fetch('/api/projects/tasks', {
@@ -34,50 +43,78 @@
 		return;
 	}
 
-	onMount(() => {
-		if (!task.id) {
-			goto('/app');
+	async function handleDeleteTask() {
+		isLoading = true;
+		try {
+			const res = await fetch(`/api/projects/tasks?task=${task.id}`, {
+				method: 'DELETE'
+			});
+			if (!res.ok) {
+				const data = await res.json();
+				if (res.status === 401) {
+					await fetch('/api/auth/logout', { method: 'POST' });
+					goto('/login');
+					return;
+				}
+
+				toast.error(data.message);
+				return;
+			}
+
+			toast.success('Задача удалена!');
+			invalidateAll();
 			return;
+		} finally {
+			isLoading = false;
 		}
-	});
+	}
 </script>
 
 <Sheet.Root>
 	<Sheet.Trigger>
 		<slot />
 	</Sheet.Trigger>
-	<Sheet.Content>
+	<Sheet.Content class="flex flex-col justify-between">
 		<Sheet.Header>
 			<h3 class="font-medium text-2xl">{task.name}</h3>
 		</Sheet.Header>
 		<div class="h-full py-8">
-			<div class="grid">
-				<h4 class="font-medium text-xl">Описание</h4>
-				{#if task.description}
-					<p class="my-1 p-2 bg-neutral-900 rounded-md">
-						{task.description}
-					</p>
-				{:else if isEditingDescription}
-					<Textarea maxlength="300" rows="10" bind:value={desc} class="my-2 h-fit"></Textarea>
-					<div class="flex items-center gap-x-2">
-						<Button class="w-full" size="sm" on:click={editDescription}>Сохранить</Button>
+			<div>
+				<div class="grid">
+					<h4 class="font-medium text-xl">Описание</h4>
+					{#if task.description}
+						<p class="my-1 p-2 bg-neutral-900 rounded-md">
+							{task.description}
+						</p>
+					{:else if isEditingDescription}
+						<Textarea maxlength="300" rows="10" bind:value={desc} class="my-2 h-fit"></Textarea>
+						<div class="flex items-center gap-x-2">
+							<Button class="w-full" size="sm" on:click={editDescription}>Сохранить</Button>
+							<Button
+								class="w-full"
+								size="sm"
+								on:click={() => (isEditingDescription = false)}
+								variant="destructive">Отменить</Button
+							>
+						</div>
+					{:else}
 						<Button
-							class="w-full"
-							size="sm"
-							on:click={() => (isEditingDescription = false)}
-							variant="destructive">Отменить</Button
+							on:click={() => (isEditingDescription = true)}
+							class="w-fit my-2"
+							variant="outline">Добавить описание</Button
 						>
-					</div>
-				{:else}
-					<Button
-						on:click={() => (isEditingDescription = true)}
-						class="w-fit my-2"
-						variant="outline">Добавить описание</Button
-					>
-				{/if}
+					{/if}
+				</div>
+				<hr class="my-2" />
+				<TaskComments comments={task.comments} taskId={task.id ?? 0} />
 			</div>
-			<hr class="my-2" />
-			<TaskComments comments={task.comments} taskId={task.id ?? 0} />
 		</div>
+		<Button variant="destructive" on:click={handleDeleteTask}>
+			{#if isLoading}
+				<LoaderCircle class="size-4 animate-spin" />
+			{:else}
+				Удалить задачу
+			{/if}
+		</Button>
 	</Sheet.Content>
 </Sheet.Root>

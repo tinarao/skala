@@ -13,7 +13,11 @@
 			<span class="text-7xl font-[800]">Управляйте проектами</span><br />
 			<span class="text-2xl">как никогда раньше</span>
 		</h1>
-		<img src={LandingPeopleDrawing} alt="Мужчина и женщина планируют проект на Skala" />
+		<img
+			class="w-[650px] mx-auto"
+			src={LandingPeopleDrawing}
+			alt="Мужчина и женщина планируют проект на Skala"
+		/>
 		<p class="text-black font-medium text-lg my-2">
 			Бесплатный сервис для удобного и эффективного управления проектами
 		</p>

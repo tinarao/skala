@@ -2,6 +2,7 @@ import { relations, sql } from 'drizzle-orm';
 import {
 	boolean,
 	date,
+	doublePrecision,
 	integer,
 	pgEnum,
 	pgTable,
@@ -34,7 +35,7 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const projects = pgTable('project', {
 	id: serial('id').primaryKey(),
 	name: text('name'),
-	percentage: integer('precentage').default(0),
+	percentage: doublePrecision('precentage').default(0.0),
 	authorId: integer('projectId').references(() => users.id),
 	picture: text('picture'),
 	remind: boolean('remind'),
@@ -69,7 +70,7 @@ export const tasks = pgTable('task', {
 	status: taskStatusEnum('status').default('not_started'),
 	priority: taskPriorityEnum('priority').default('normal'),
 	description: text('description'),
-	projectId: integer('projectId').references(() => projects.id)
+	projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' })
 });
 
 export const tasksRelations = relations(tasks, ({ one, many }) => ({
@@ -82,8 +83,8 @@ export const tasksRelations = relations(tasks, ({ one, many }) => ({
 
 export const comments = pgTable('comment', {
 	id: serial('id').primaryKey(),
-	authorId: integer('authorId').references(() => users.id),
-	taskId: integer('taskId').references(() => tasks.id),
+	authorId: integer('authorId').references(() => users.id, { onDelete: 'cascade' }),
+	taskId: integer('taskId').references(() => tasks.id, { onDelete: 'cascade' }),
 	body: text('body').notNull(),
 	createdAt: date('createdAt'),
 })
@@ -107,10 +108,10 @@ export const projectToCollaborators = pgTable(
 	{
 		userId: integer('userId')
 			.notNull()
-			.references(() => users.id),
+			.references(() => users.id, { onDelete: 'cascade' }),
 		projectId: integer('projectId')
 			.notNull()
-			.references(() => projects.id),
+			.references(() => projects.id, { onDelete: 'cascade' }),
 	},
 	(t) => ({
 		pk: primaryKey({ columns: [t.userId, t.projectId] }),
@@ -135,10 +136,10 @@ export const projectToInvitations = pgTable(
 	{
 		userId: integer('userId')
 			.notNull()
-			.references(() => users.id),
+			.references(() => users.id, { onDelete: 'cascade' }),
 		projectId: integer('projectId')
 			.notNull()
-			.references(() => projects.id),
+			.references(() => projects.id, { onDelete: 'cascade' }),
 	},
 	(t) => ({
 		pk: primaryKey({ columns: [t.userId, t.projectId] }),
