@@ -15,27 +15,13 @@ const AcceptInviteDTO = z.object({
 })
 
 /** @type {import("./$types").RequestHandler} */
-export async function POST({ request, cookies }) {
-    if (!(await authMiddleware(cookies))) {
-        return await fetch("/api/auth/logout", { method: "POST " });
-    }
-
+export async function POST({ request, locals }) {
     const { error, success, data } = InviteDTO.safeParse(await request.json());
     if (!success) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос", "error": error.message }), { status: 400 })
     }
 
-    const userId = cookies.get("id")
-    if (!userId) {
-        // невозможный сценарий БУКВАЛЬНО
-        // написано только для того, чтобы линтер успокоился
-        return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
-    }
-
-    const [user, project, userToInvite] = await Promise.all([
-        db.query.users.findFirst({
-            where: (user, { eq }) => eq(user.id, parseInt(userId))
-        }),
+    const [project, userToInvite] = await Promise.all([
         db.query.projects.findFirst({
             where: (project, { eq }) => eq(project.id, data.projectId)
         }),
@@ -43,11 +29,6 @@ export async function POST({ request, cookies }) {
             where: (user, { eq }) => eq(user.username, data.userToInviteUsername)
         })
     ])
-
-    if (!user) {
-        // Impossible
-        return new Response(JSON.stringify({ "message": "Пользователь не найден" }), { status: 404 })
-    }
 
     if (!userToInvite) {
         return new Response(JSON.stringify({ "message": "Пользователь не найден" }), { status: 404 })
@@ -57,7 +38,7 @@ export async function POST({ request, cookies }) {
         return new Response(JSON.stringify({ "message": "Проект не найден" }), { status: 404 })
     }
 
-    if (userToInvite.id === user.id) {
+    if (userToInvite.id === locals.user.id) {
         return new Response(JSON.stringify({ "message": "Вы не можете пригласить в проект себя!" }), { status: 403 })
     }
 
@@ -75,15 +56,6 @@ export async function PATCH({ request, cookies }) {
     const { error, success, data: dto } = AcceptInviteDTO.safeParse(await request.json());
     if (!success) {
         return new Response(JSON.stringify(error.message), { status: 400 })
-    }
-
-    const cookieId = cookies.get('id');
-    if (!cookieId || isNaN(parseInt(cookieId)) || parseInt(cookieId) !== dto.userId) {
-        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
-    }
-
-    if (!(await authMiddleware(cookies))) {
-        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
     }
 
     const txCode = await db.transaction(async (tx) => {
@@ -130,16 +102,6 @@ export async function GET({ url, cookies }) {
     const projectId = url.searchParams.get("projectId");
     if (!projectId) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
-    }
-
-    const userId = cookies.get('id');
-    if (!userId) {
-        // Unreachable
-        return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
-    }
-
-    if (!(await authMiddleware(cookies))) {
-        return await fetch("/api/auth/logout", { method: "POST " });
     }
 
     const project = await db.query.projects.findFirst({

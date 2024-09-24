@@ -1,70 +1,37 @@
 import { db } from '$lib/db/db';
-import { redis } from '$lib/redis';
 import { utapi } from '$lib/server/ut';
-import { redirect } from '@sveltejs/kit';
-
-/**
- * @param {number} userId 
- */
-async function getInvites(userId) {
-	const invites = await db.query.projectToInvitations.findMany({
-		where: (invite, { eq }) => eq(invite.userId, userId),
-		with: { project: true }
-	});
-
-	return invites
-}
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ cookies }) {
-	try {
-		const cookieId = cookies.get('id');
-		const cookieSid = cookies.get('session_id');
+export async function load({ cookies, locals }) {
+	const user = locals.user;
 
-		if (!cookieId) {
-			throw new Error()
-		}
+	console.time('Projects, collabs & invites')
+	const [projects, collabs, invites] = await Promise.all([
+		db.query.projects.findMany({
+			where: (project, { eq }) => eq(project.authorId, user.id)
+		}),
+		db.query.projectToCollaborators.findMany({
+			where: (collab, { eq }) => eq(collab.userId, user.id),
+			with: { project: true }
+		}),
+		db.query.projectToInvitations.findMany({
+			where: (invite, { eq }) => eq(invite.userId, user.id),
+			with: { project: true }
+		})
+	])
+	console.timeEnd('Projects, collabs & invites')
 
-		if (isNaN(parseInt(cookieId))) {
-			throw new Error()
-		}
-
-		if (!cookieSid) {
-			throw new Error()
-		}
-
-		const [userDoc, invites] = await Promise.all([
-			db.query.users.findFirst({
-				where: (user, { eq }) => eq(user.id, parseInt(cookieId))
-			}),
-			getInvites(parseInt(cookieId)),
-		])
-
-		if (!userDoc) {
-			throw new Error()
-		}
-
-		// check session
-		const sessionUserId = await redis.get(cookieSid);
-		if (sessionUserId !== userDoc.id) {
-			throw new Error()
-		}
-
-		if (!!userDoc.picture) {
-			const url = await utapi.getSignedURL(userDoc.picture, {
+	console.time('Project.picture checking & fetching')
+	for (let project of projects) {
+		if (project.picture) {
+			const url = await utapi.getSignedURL(project.picture, {
 				expiresIn: '7 days',
 			});
 
-			userDoc.picture = url.url
+			project.picture = url.url
 		}
-
-		const { sessionId, password, ...user } = userDoc;
-
-		return { user, invites }
-	} catch (error) {
-		cookies.delete('session_id', { path: '/' });
-		cookies.delete('id', { path: '/' })
-
-		redirect(302, "/login")
 	}
+	console.timeEnd('Project.picture checking & fetching')
+
+	return { user, projects, collabs, invites }
 }

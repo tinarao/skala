@@ -3,11 +3,9 @@
 	import { goto, invalidateAll } from '$app/navigation';
 	import Button from '../ui/button/button.svelte';
 	import LoaderIcon from 'lucide-svelte/icons/loader-circle';
-	import ThumbsUp from 'lucide-svelte/icons/thumbs-up';
 	import ArrowUpIcon from 'lucide-svelte/icons/arrow-big-up';
 	import AvatarPlaceholder from '../../../assets/avatar-ph.jpg';
 	import { toast } from 'svelte-sonner';
-	import { onMount } from 'svelte';
 
 	let isLoading = false;
 	let comment = '';

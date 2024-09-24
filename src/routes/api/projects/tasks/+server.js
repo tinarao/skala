@@ -66,37 +66,22 @@ export async function PATCH({ request }) {
 }
 
 /** @type {import('./$types').RequestHandler} */
-export async function DELETE({ cookies, url }) {
-	const isAllowed = await authMiddleware(cookies);
-	if (!isAllowed) {
-		return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
-	}
-
+export async function DELETE({ cookies, url, locals }) {
 	const taskId = url.searchParams.get('task');
 	if (!taskId) {
 		return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
 	}
 
-	const cookieId = cookies.get('id')
-	if (!cookieId) {
-		return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
-	}
+	const task = await db.query.tasks.findFirst({
+		where: (task, { eq }) => eq(task.id, parseInt(taskId)),
+		with: { project: { columns: { id: true, authorId: true } } }
+	})
 
-	const [user, task] = await Promise.all([
-		db.query.users.findFirst({
-			where: (user, { eq }) => eq(user.id, parseInt(cookieId))
-		}),
-		db.query.tasks.findFirst({
-			where: (task, { eq }) => eq(task.id, parseInt(taskId)),
-			with: { project: { columns: { id: true, authorId: true } } }
-		})
-	])
-
-	if (!user || !task) {
+	if (!task) {
 		return new Response(JSON.stringify({ "message": "Задача не найдена" }), { status: 404 })
 	}
 
-	if (task.project?.authorId !== user.id) {
+	if (task.project?.authorId !== locals.user.id) {
 		return new Response(JSON.stringify({ "message": "Запрещено" }), { status: 403 })
 	}
 

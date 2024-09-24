@@ -18,7 +18,7 @@
 		{#if data.projects?.length && data.projects !== undefined}
 			{#each data.projects as project}
 				<a
-					href="/app/project?id={project.id}&u={$userStore.id}"
+					href="/app/project?id={project.id}"
 					class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
 				>
 					<div class="h-60 w-full">
@@ -63,10 +63,10 @@
 			{#if data.projects?.length && data.projects !== undefined}
 				{#each data.collabs as collab}
 					<a
-						href="/app/project?id={collab.project.id}&u={$userStore.id}"
+						href="/app/project?id={collab.project.id}"
 						class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
 					>
-						<img src={Placeholder} alt="Проект {collab.project.name}" />
+						<img src={Placeholder} alt="Проект {collab.project.name}" loading="lazy" />
 						<div class="p-2">
 							<h6 class="font-medium text-lg">{collab.project.name}</h6>
 						</div>

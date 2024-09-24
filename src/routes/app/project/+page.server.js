@@ -4,9 +4,6 @@ import { utapi } from '$lib/server/ut';
 import { redirect } from '@sveltejs/kit';
 import { and, count, eq } from 'drizzle-orm';
 
-// get project
-// get invites
-
 /** 
  * @param {number} projectId
 */
@@ -117,32 +114,20 @@ async function getPercentage(projectId) {
 
 
 /** @type { import("./$types").PageServerLoad } */
-export async function load({ url, depends }) {
+export async function load({ url, depends, locals }) {
 	depends('tasks:fetch');
 	const projectId = url.searchParams.get('id');
-	const userId = url.searchParams.get('u');
+	const user = locals.user;
 
 	if (!projectId) {
 		return redirect(302, '/app');
 	}
 
-	if (!userId) {
-		return redirect(302, '/app');
-	}
-
 	const [project, invites, percentage] = await Promise.all([
-		getProjectDetails(parseInt(projectId), parseInt(userId)),
+		getProjectDetails(parseInt(projectId), user.id),
 		getInvites(parseInt(projectId)),
 		getPercentage(parseInt(projectId))
 	])
-
-	if (project.picture) {
-		const url = await utapi.getSignedURL(project.picture, {
-			expiresIn: '7 days',
-		});
-
-		project.picture = url.url
-	}
 
 	return { project, invites, percentage }
 }

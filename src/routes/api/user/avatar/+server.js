@@ -6,17 +6,8 @@ import { utapi } from "$lib/server/ut";
 import { eq } from "drizzle-orm";
 
 /** @type {import("./$types").RequestHandler} */
-export async function PATCH({ request, cookies }) {
-    const isAuth = await authMiddleware(cookies);
-    if (!isAuth) {
-        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
-    }
-
+export async function PATCH({ request, locals }) {
     const formdata = await request.formData();
-    const cookieId = cookies.get('id')
-    if (!cookieId) {
-        return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
-    }
 
     /** @type {File | string} */
     const file = formdata.get("file");
@@ -31,7 +22,7 @@ export async function PATCH({ request, cookies }) {
 
     const saved = await db.update(users).set(
         { picture: response.data?.key }
-    ).where(eq(users.id, parseInt(cookieId))).returning()
+    ).where(eq(users.id, locals.user.id)).returning()
 
     return new Response(JSON.stringify({ "message": "ok" }), { status: 201 })
 }

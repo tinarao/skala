@@ -11,20 +11,40 @@ const AddCommentDTO = z.object({
 })
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET({ url, cookies }) {
+export async function GET({ url, locals }) {
     const taskId = url.searchParams.get('task');
 
     // get user
     // get project
     // check if user can watch this info
 
-    const isAuth = await authMiddleware(cookies);
-    if (!isAuth) {
-        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
-    }
-
     if (!taskId) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
+    }
+
+    const task = await db.query.tasks.findFirst({
+        where: (task, { eq }) => eq(task.id, parseInt(taskId)),
+        with: { project: { with: { collaborations: { with: { user: { columns: { id: true } } } } } } }
+    })
+    if (!task) {
+        return new Response(JSON.stringify({ "message": "Задача не найдена" }), { status: 404 })
+    }
+
+    let isCollaborator = false;
+    if (task.project?.authorId !== locals.user.id) {
+        // so if not author
+        return new Response(JSON.stringify({ "message": "Доступ ограничен" }), { status: 403 })
+    }
+
+    task.project?.collaborations.forEach(c => {
+        if (c.user.id === locals.user.id) {
+            isCollaborator = true;
+        }
+    })
+
+    if (!isCollaborator) {
+        // and not colalborator
+        return new Response(JSON.stringify({ "message": "Доступ ограничен" }), { status: 403 })
     }
 
     const comments = await db.query.comments.findMany({
@@ -35,27 +55,14 @@ export async function GET({ url, cookies }) {
 }
 
 /** @type {import('./$types').RequestHandler} */
-export async function POST({ url, cookies, request }) {
+export async function POST({ locals, request }) {
     try {
-        const isAuth = await authMiddleware(cookies);
-        if (!isAuth) {
-            return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
-        }
-
-        const userId = cookies.get('id');
-        if (!userId) {
-            return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
-        }
-
         const { data: dto, success, error } = AddCommentDTO.safeParse(await request.json())
         if (!success) {
             return new Response(JSON.stringify({ "message": "Некорректный запрос", "error": error.message }), { status: 400 })
         }
 
-        const [user, project, task] = await Promise.all([
-            db.query.users.findFirst({
-                where: (user, { eq }) => eq(user.id, parseInt(userId))
-            }),
+        const [project, task] = await Promise.all([
             db.query.projects.findFirst({
                 where: (project, { eq }) => eq(project.id, dto.projectId)
             }),
@@ -64,32 +71,28 @@ export async function POST({ url, cookies, request }) {
             })
         ])
 
-        if (!task || !project || !user) {
+        if (!task || !project) {
             return new Response(JSON.stringify({
                 "message": "Не удалось найти необходимые данные",
                 "description": "Проверьте правильность введённых данных и попробуйте снова"
             }), { status: 400 })
         }
+
         if (project.id !== task.projectId) {
             return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
         }
 
-        // Check if collaborator also
-        const collabs = await db.query.projectToCollaborators.findFirst({
-            where: (collab, { eq }) => and(
-                eq(collab.projectId, dto.projectId),
-                eq(collab.userId, parseInt(userId)),
-            )
-        })
+        // if (not collaborator) { go fuck yourself }
 
         // if user is not collaborator and if user is not author
-        if (!collabs && user.id !== project.authorId) {
+        if (locals.user.id !== project.authorId) {
             return new Response(JSON.stringify({ "message": "Запрещено" }), { status: 403 })
         }
 
+        console.log("CREATING")
         // Create comment
         const created = await db.insert(comments).values({
-            authorId: user.id,
+            authorId: locals.user.id,
             taskId: task.id,
             body: dto.comment
         }).onConflictDoNothing().returning()
@@ -97,6 +100,7 @@ export async function POST({ url, cookies, request }) {
         return new Response(JSON.stringify({ "message": "Создано", id: created[0].id }), { status: 201 })
 
     } catch (error) {
+        console.error(error)
         return new Response(JSON.stringify({ "message": "Внутренняя ошибка сервера" }), { status: 500 })
     }
 
