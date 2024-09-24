@@ -47,7 +47,6 @@ export async function PATCH({ request }) {
 	const payload = await request.json();
 	const { data: newTask, success, error } = taskValidator.safeParse(payload);
 	if (!success) {
-		console.error(error);
 		return new Response(JSON.stringify({ message: 'Некорректный запрос' }), { status: 400 });
 	}
 

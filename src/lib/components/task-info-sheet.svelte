@@ -22,7 +22,6 @@
 
 		const resData = await res.json();
 		if (!res.ok) {
-			console.error(resData);
 			toast.error('Ошибка при обновлении задачи');
 			isEditingDescription = false;
 			return;

@@ -43,6 +43,8 @@ async function getInvites(projectId) {
 async function getProjectDetails(projectId, userId) {
 	const project = await db.query.projects.findFirst({
 		where: (pr, { eq }) => eq(pr.id, projectId),
+		// HAIIIYYYYAAAAAAAAAAAAHHHHHHHHHHHHHHHHHHHHHH
+		// ☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨☨
 		with: {
 			tasks: {
 				with: {
@@ -59,8 +61,6 @@ async function getProjectDetails(projectId, userId) {
 			}
 		}
 	});
-
-	console.log("Find project load function triggered");
 
 	if (!project) {
 		redirect(302, '/app');

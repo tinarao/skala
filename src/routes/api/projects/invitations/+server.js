@@ -32,7 +32,6 @@ export async function POST({ request, cookies }) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
     }
 
-    console.time("Promise all call")
     const [user, project, userToInvite] = await Promise.all([
         db.query.users.findFirst({
             where: (user, { eq }) => eq(user.id, parseInt(userId))
@@ -44,7 +43,6 @@ export async function POST({ request, cookies }) {
             where: (user, { eq }) => eq(user.username, data.userToInviteUsername)
         })
     ])
-    console.timeEnd("Promise all call")
 
     if (!user) {
         // Impossible
@@ -74,23 +72,23 @@ export async function POST({ request, cookies }) {
 // Accept invite endpoint
 /** @type {import("./$types").RequestHandler} */
 export async function PATCH({ request, cookies }) {
-    const {error, success, data: dto} = AcceptInviteDTO.safeParse(await request.json());
+    const { error, success, data: dto } = AcceptInviteDTO.safeParse(await request.json());
     if (!success) {
         return new Response(JSON.stringify(error.message), { status: 400 })
     }
 
     const cookieId = cookies.get('id');
     if (!cookieId || isNaN(parseInt(cookieId)) || parseInt(cookieId) !== dto.userId) {
-        return new Response(JSON.stringify({ "message": "Не авторизован"}), { status: 401 })
+        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
     }
 
     if (!(await authMiddleware(cookies))) {
-        return new Response(JSON.stringify({ "message": "Не авторизован"}), { status: 401 })
+        return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
     }
-    
+
     const txCode = await db.transaction(async (tx) => {
         const invite = await tx.query.projectToInvitations.findFirst({
-            where: ( invite, { eq }) => and(
+            where: (invite, { eq }) => and(
                 eq(invite.projectId, dto.projectId),
                 eq(invite.userId, dto.userId),
             )
@@ -114,16 +112,16 @@ export async function PATCH({ request, cookies }) {
         }
 
         return 200;
-        
+
     });
 
     switch (txCode) {
         case 404:
-            return new Response(JSON.stringify({"message": "Приглашение не найдено"}), { status: 404 });
+            return new Response(JSON.stringify({ "message": "Приглашение не найдено" }), { status: 404 });
         case 500:
-            return new Response(JSON.stringify({"message": "Внутренняя ошибка сервера"}), { status: 500 });
+            return new Response(JSON.stringify({ "message": "Внутренняя ошибка сервера" }), { status: 500 });
         case 200:
-            return new Response(JSON.stringify({"message": "Ок!"}), { status: 200 })
+            return new Response(JSON.stringify({ "message": "Ок!" }), { status: 200 })
     }
 }
 

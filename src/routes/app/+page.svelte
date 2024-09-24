@@ -12,9 +12,9 @@
 
 <title>Проекты - Skala</title>
 <div class="h-full py-2">
-	<h1 class="text-4xl font-medium">Ваши проекты</h1>
+	<h1 class="text-4xl font-medium">Проекты</h1>
 
-	<div class="grid grid-cols-4 gap-4 py-4">
+	<div class="grid grid-cols-4 gap-4 py-2">
 		{#if data.projects?.length && data.projects !== undefined}
 			{#each data.projects as project}
 				<a
@@ -22,7 +22,11 @@
 					class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
 				>
 					<div class="h-60 w-full">
-						<img class="size-full object-cover" src={project.picture ?? Placeholder} alt="Проект {project.name}" />
+						<img
+							class="size-full object-cover"
+							src={project.picture ?? Placeholder}
+							alt="Проект {project.name}"
+						/>
 					</div>
 					<div class="p-2">
 						<h6 class="font-medium text-lg">{project.name}</h6>
@@ -53,8 +57,9 @@
 	</div>
 
 	{#if data.collabs && data.collabs.length}
-		<h3>Совместная работа</h3>
-		<div class="grid grid-cols-4 gap-4 py-4">
+		<hr class="my-2" />
+		<h3 class="font-medium text-xl">Совместная работа</h3>
+		<div class="grid grid-cols-4 gap-4 py-2">
 			{#if data.projects?.length && data.projects !== undefined}
 				{#each data.collabs as collab}
 					<a

@@ -7,11 +7,15 @@ import { eq } from "drizzle-orm";
 
 /** @type {import("./$types").RequestHandler} */
 export async function PATCH({ request, cookies }) {
-    const formdata = await request.formData();
-
     const isAuth = await authMiddleware(cookies);
     if (!isAuth) {
         return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
+    }
+
+    const formdata = await request.formData();
+    const cookieId = cookies.get('id')
+    if (!cookieId) {
+        return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
     }
 
     /** @type {File | string} */

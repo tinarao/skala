@@ -24,7 +24,7 @@
 	});
 
 	async function submit() {
-		isLoading = true
+		isLoading = true;
 		try {
 			const values = {
 				deadline: date ? new Date(date.toString()) : undefined,
@@ -65,7 +65,7 @@
 		<Label>Введите название проекта</Label>
 		<Input disabled={isLoading} bind:value={name} />
 	</div>
-	<div class="grid space-y-1">
+	<!-- <div class="grid space-y-1">
 		<Label>Когда дедлайн?</Label>
 		<Popover.Root>
 			<Popover.Trigger asChild let:builder>
@@ -82,13 +82,11 @@
 				<Calendar bind:value={date} initialFocus />
 			</Popover.Content>
 		</Popover.Root>
-	</div>
+	</div> -->
 	<div class="flex items-center">
 		<Checkbox disabled={isLoading} bind:checked={remind} class="mr-2" />
 		<Label>Напоминать Вам о задачах?</Label>
 	</div>
-	<hr class="my-2">
-		<Button size="lg" on:click={submit} disabled={isLoading}>
-			Создать
-		</Button>
+	<hr class="my-2" />
+	<Button size="lg" on:click={submit} disabled={isLoading}>Создать</Button>
 </div>
