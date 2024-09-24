@@ -86,7 +86,6 @@ export const comments = pgTable('comment', {
 	taskId: integer('taskId').references(() => tasks.id),
 	body: text('body').notNull(),
 	createdAt: date('createdAt'),
-	likes: integer('likes').default(0)
 })
 
 export const commentRelations = relations(comments, ({ one }) => ({

@@ -45,10 +45,22 @@ async function getProjectDetails(projectId, userId) {
 		where: (pr, { eq }) => eq(pr.id, projectId),
 		with: {
 			tasks: {
-				with: { comments: true }
+				with: {
+					comments: {
+						with: {
+							author: {
+								columns: {
+									id: true, picture: true, username: true
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 	});
+
+	console.log("Find project load function triggered");
 
 	if (!project) {
 		redirect(302, '/app');

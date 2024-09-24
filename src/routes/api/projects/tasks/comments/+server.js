@@ -28,7 +28,7 @@ export async function GET({ url, cookies }) {
     }
 
     const comments = await db.query.comments.findMany({
-        where: (cmt, { eq }) => eq(cmt.taskId, taskId)
+        where: (cmt, { eq }) => eq(cmt.taskId, parseInt(taskId))
     })
 
     return new Response(JSON.stringify({ "comments": comments }), { status: 200 })
@@ -47,9 +47,9 @@ export async function POST({ url, cookies, request }) {
             return new Response(JSON.stringify({ "message": "Не авторизован" }), { status: 401 })
         }
 
-        const { data: dto, success } = AddCommentDTO.safeParse(await request.json())
+        const { data: dto, success, error } = AddCommentDTO.safeParse(await request.json())
         if (!success) {
-            return new Response(JSON.stringify({ "message": "Некорректный запрос" }), { status: 400 })
+            return new Response(JSON.stringify({ "message": "Некорректный запрос", "error": error.message }), { status: 400 })
         }
 
         const [user, project, task] = await Promise.all([
@@ -91,8 +91,7 @@ export async function POST({ url, cookies, request }) {
         const created = await db.insert(comments).values({
             authorId: user.id,
             taskId: task.id,
-            body: dto.comment,
-            likes: 0
+            body: dto.comment
         }).onConflictDoNothing().returning()
 
         return new Response(JSON.stringify({ "message": "Создано", id: created[0].id }), { status: 201 })

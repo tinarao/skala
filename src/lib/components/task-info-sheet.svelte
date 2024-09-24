@@ -49,15 +49,13 @@
 	</Sheet.Trigger>
 	<Sheet.Content>
 		<Sheet.Header>
-			<Sheet.Title>
-				{task.name}
-			</Sheet.Title>
+			<h3 class="font-medium text-2xl">{task.name}</h3>
 		</Sheet.Header>
 		<div class="h-full py-8">
 			<div class="grid">
-				<Label>Описание</Label>
+				<h4 class="font-medium text-xl">Описание</h4>
 				{#if task.description}
-					<p>
+					<p class="my-1 p-2 bg-neutral-900 rounded-md">
 						{task.description}
 					</p>
 				{:else if isEditingDescription}
@@ -80,7 +78,7 @@
 				{/if}
 			</div>
 			<hr class="my-2" />
-			<TaskComments taskId={task.id ?? 0} />
+			<TaskComments comments={task.comments} taskId={task.id ?? 0} />
 		</div>
 	</Sheet.Content>
 </Sheet.Root>
