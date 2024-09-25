@@ -5,7 +5,7 @@ import { and } from 'drizzle-orm';
 
 /** @type {import('@sveltejs/kit').Handle} */
 export async function handle({ event, resolve }) {
-    if (event.url.pathname.startsWith('/app')) {
+    if (event.url.pathname.startsWith('/app') || event.url.pathname.startsWith('/api')) {
         const sessionId = event.cookies.get('session_id');
 
         if (!sessionId) {

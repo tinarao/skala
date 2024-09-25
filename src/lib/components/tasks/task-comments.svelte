@@ -33,8 +33,9 @@
 					projectId: parseInt(projectId) // get from url
 				})
 			});
-			const data = await res.json();
+
 			if (!res.ok) {
+				const data = await res.json();
 				toast.error(data.message);
 				return;
 			}
@@ -53,6 +54,7 @@
 
 	/** @type {import("$lib/typedefs").Comment[]}*/
 	export let comments;
+	comments = comments.toReversed();
 </script>
 
 <div>
