@@ -1,5 +1,5 @@
 <script>
-	import { invalidate } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import AddTaskCard from '$lib/components/add-task-card.svelte';
 	import TaskCard from '$lib/components/task-card.svelte';
 	import { dndTask } from '$lib/db/dnd.js';
@@ -53,7 +53,7 @@
 			return;
 		}
 
-		invalidate('tasks:fetch');
+		await invalidateAll();
 		targetElement.classList.remove('bg-neutral-900');
 		return;
 	}
@@ -84,6 +84,7 @@
 			<ChangeAvatarDialog projectId={data.project.id} />
 		</div>
 	</header>
+
 	<div id="dnd-cols-wrapper" class="grid grid-cols-4 gap-x-4 flex-1">
 		<div
 			role="list"

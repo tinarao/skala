@@ -7,23 +7,57 @@
 	import CreateProjectForm from '$lib/components/projects/create-project-form.svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import * as Select from '$lib/components/ui/select';
 
 	export let data;
+
+	/** @type {"all" | "done" | "active"}*/
+	let filter = 'all';
 
 	onMount(() => {
 		if (!data.projects.length && !data.collabs.length) {
 			goto('/app/create');
 		}
 	});
+
+	/**
+	 * @param {"all" | "done" | "active"} filter
+	 * @returns {import("$lib/typedefs").Project[]} projects
+	 */
+	const filterProjects = (filter) => {
+		switch (filter) {
+			case 'all':
+				return data.projects;
+			case 'active':
+				return data.projects.filter((p) => p.percentage < 100);
+			case 'done':
+				return data.projects.filter((p) => p.percentage === 100);
+		}
+	};
+
+	$: projects = filterProjects(filter);
 </script>
 
 <title>Проекты - Skala</title>
 <div class="h-full py-2">
 	<h1 class="text-4xl font-medium">Проекты</h1>
+	<h1>{filter}</h1>
+	<div class="w-full py-2">
+		<Select.Root onSelectedChange={(e) => (filter = e?.value)}>
+			<Select.Trigger class="w-[180px]">
+				<Select.Value placeholder="Фильтр" />
+			</Select.Trigger>
+			<Select.Content class="bg-background text-text">
+				<Select.Item value="done">Завершённые</Select.Item>
+				<Select.Item value="active">Активные</Select.Item>
+				<Select.Item value="all">Все</Select.Item>
+			</Select.Content>
+		</Select.Root>
+	</div>
 
 	<div class="grid grid-cols-4 gap-4 py-2">
 		{#if data.projects?.length && data.projects !== undefined}
-			{#each data.projects as project}
+			{#each projects as project}
 				<a
 					href="/app/project?id={project.id}"
 					class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
