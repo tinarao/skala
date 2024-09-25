@@ -41,7 +41,6 @@
 <title>Проекты - Skala</title>
 <div class="h-full py-2">
 	<h1 class="text-4xl font-medium">Проекты</h1>
-	<h1>{filter}</h1>
 	<div class="w-full py-2">
 		<Select.Root onSelectedChange={(e) => (filter = e?.value)}>
 			<Select.Trigger class="w-[180px]">
