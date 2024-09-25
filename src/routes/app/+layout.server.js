@@ -5,7 +5,7 @@ import { utapi } from '$lib/server/ut';
 export async function load({ cookies, locals }) {
 	const user = locals.user;
 
-	console.time('Projects, collabs & invites')
+	console.time('Index data')
 	const [projects, collabs, invites] = await Promise.all([
 		db.query.projects.findMany({
 			where: (project, { eq }) => eq(project.authorId, user.id)
@@ -19,9 +19,7 @@ export async function load({ cookies, locals }) {
 			with: { project: true }
 		})
 	])
-	console.timeEnd('Projects, collabs & invites')
 
-	console.time('Project.picture checking & fetching')
 	for (let project of projects) {
 		if (project.picture) {
 			const url = await utapi.getSignedURL(project.picture, {
@@ -31,7 +29,7 @@ export async function load({ cookies, locals }) {
 			project.picture = url.url
 		}
 	}
-	console.timeEnd('Project.picture checking & fetching')
+	console.timeEnd('Index data')
 
 	return { user, projects, collabs, invites }
 }

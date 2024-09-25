@@ -61,8 +61,6 @@ export async function POST({ locals, request }) {
         return new Response(JSON.stringify({ "message": "Некорректный запрос", "errors": error.message }), { status: 400 })
     }
 
-    console.log(locals.user)
-
     const task = await db.query.tasks.findFirst({
         where: (task, { eq }) => and(
             eq(task.id, dto.taskId),

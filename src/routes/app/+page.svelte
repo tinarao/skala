@@ -4,10 +4,17 @@
 	import Placeholder from '../../assets/project-ph.jpg';
 	import Plus from 'lucide-svelte/icons/plus';
 	import { Progress } from '$lib/components/ui/progress';
-	import { userStore } from '$lib/user';
 	import CreateProjectForm from '$lib/components/projects/create-project-form.svelte';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	export let data;
+
+	onMount(() => {
+		if (!data.projects.length && !data.collabs.length) {
+			goto('/app/create');
+		}
+	});
 </script>
 
 <title>Проекты - Skala</title>
