@@ -10,6 +10,7 @@
 	import InvitationsListPopover from '$lib/components/projects/invitations-list-popover.svelte';
 	import ChangeAvatarDialog from '$lib/components/projects/change-avatar-dialog.svelte';
 	import { cn } from '$lib/utils.js';
+	import { onMount } from 'svelte';
 
 	export let data;
 	// // Попробую когда-нибудь починить это уёбище
@@ -57,6 +58,14 @@
 		targetElement.classList.remove('bg-neutral-900');
 		return;
 	}
+
+	onMount(async () => {
+		if (!data.project.remind) {
+			return;
+		}
+
+		// Reminder code
+	});
 </script>
 
 <title>Проект {data.project.name} - Skala</title>

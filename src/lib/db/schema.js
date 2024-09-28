@@ -38,7 +38,7 @@ export const projects = pgTable('project', {
 	percentage: doublePrecision('precentage').default(0.0).notNull(),
 	authorId: integer('projectId').references(() => users.id),
 	picture: text('picture'),
-	remind: boolean('remind'),
+	remind: boolean('remind').notNull().default(false),
 	deadline: date('deadline'),
 	tags: text('tags')
 		.array()

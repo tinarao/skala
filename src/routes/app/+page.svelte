@@ -62,8 +62,8 @@
 		</div>
 
 		<div class="grid grid-cols-4 gap-4 py-2">
-			{#if data.projects?.length && data.projects !== undefined}
-				{#each data.projects as project}
+			{#if projects?.length && projects !== undefined}
+				{#each projects as project}
 					<a
 						href="/app/project?id={project.id}"
 						class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
