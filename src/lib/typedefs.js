@@ -13,6 +13,7 @@
  * @typedef {Object} Project
  * @property {number | null} id
  * @property {string | null} name
+ * @property {string | null | undefined} description
  * @property {string | null} picture
  * @property {number | null} [percentage]
  * @property {number | null} authorId

@@ -9,6 +9,7 @@
 	import { toast } from 'svelte-sonner';
 	import { goto, invalidate } from '$app/navigation';
 	import { initialState, userStore } from '$lib/user';
+	import { Textarea } from './ui/textarea';
 
 	/** @type {import ("$lib/typedefs").Project}*/
 	export let project;
@@ -16,13 +17,17 @@
 	let isLoading = false;
 	let name = project.name ?? 'Проект';
 
+	/** @type {string | undefined}*/
+	let description = project.description ?? undefined;
+
 	async function handleSaveChanges() {
 		isLoading = true;
 
 		try {
 			const payload = {
 				...project,
-				name
+				name,
+				description
 			};
 			const res = await fetch('/api/projects', {
 				method: 'PATCH',
@@ -90,6 +95,10 @@
 			<Label>Переименовать проект</Label>
 			<Input disabled={isLoading} bind:value={name} />
 		</div>
+		<div>
+			<Label>Изменить описание</Label>
+			<Textarea maxLength={350} rows="5" disabled={isLoading} bind:value={description} />
+		</div>
 		<hr class="my-1" />
 		<div class="flex items-center justify-between">
 			<Button disabled={isLoading} on:click={handleSaveChanges}>
@@ -104,7 +113,7 @@
 				<Button disabled={isLoading} variant="outline" builders={[builder]}>Отменить</Button>
 			</Dialog.Close>
 		</div>
-		<hr class="my-2" />
+		<hr class="my-1" />
 		<div class="flex items-center justify-between border rounded-md p-3">
 			<div>
 				<p class="text-red-500 font-medium">Удалить проект</p>

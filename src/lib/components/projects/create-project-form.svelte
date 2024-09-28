@@ -1,15 +1,12 @@
 <script>
-	import * as Popover from '$lib/components/ui/popover/index.js';
-	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
 	import Input from '$lib/components/ui/input/input.svelte';
 	import Label from '$lib/components/ui/label/label.svelte';
-	import { Calendar } from '$lib/components/ui/calendar/index.js';
-
-	import CalendarIcon from 'lucide-svelte/icons/calendar';
 	import Button from '$lib/components/ui/button/button.svelte';
-	import { cn } from '$lib/utils';
-	import { DateFormatter, getLocalTimeZone } from '@internationalized/date';
+	import Checkbox from '$lib/components/ui/checkbox/checkbox.svelte';
+
 	import { toast } from 'svelte-sonner';
+	import { Textarea } from '../ui/textarea';
+	import { LoaderCircle } from 'lucide-svelte';
 	import { goto, invalidateAll } from '$app/navigation';
 
 	/** @type {import("@internationalized/date").DateValue | undefined}*/
@@ -19,16 +16,21 @@
 
 	let name = '';
 
-	const df = new DateFormatter('ru-RU', {
-		dateStyle: 'full'
-	});
+	/** @type {string | undefined}*/
+	let description = undefined;
 
 	async function submit() {
+		if (!name || name === '') {
+			toast.error('Вы не указали название проекта!');
+			return;
+		}
+
 		isLoading = true;
 		try {
 			const values = {
 				deadline: date ? new Date(date.toString()) : undefined,
 				remind,
+				description,
 				name
 			};
 
@@ -37,7 +39,6 @@
 				body: JSON.stringify(values)
 			});
 
-			const resData = await res.json();
 			if (res.status !== 201) {
 				if (res.status === 400) {
 					toast.error('Вы заполнили все поля? Точно?');
@@ -63,32 +64,31 @@
 </script>
 
 <div class="space-y-2">
-	<div class="space-y-1">
-		<Label>Введите название проекта</Label>
-		<Input disabled={isLoading} bind:value={name} />
+	<div>
+		<Label>Введите название проекта <span class="text-red-500">*</span></Label>
+		<Input placeholder="Skala" disabled={isLoading} bind:value={name} />
 	</div>
-	<!-- <div class="grid space-y-1">
-		<Label>Когда дедлайн?</Label>
-		<Popover.Root>
-			<Popover.Trigger asChild let:builder>
-				<Button
-					variant="outline"
-					class={cn('m-0 justify-start text-left font-normal', !date && 'text-muted-foreground')}
-					builders={[builder]}
-				>
-					<CalendarIcon class="mr-2 h-4 w-4" />
-					{date ? df.format(date.toDate(getLocalTimeZone())) : 'Pick a date'}
-				</Button>
-			</Popover.Trigger>
-			<Popover.Content class="w-auto p-0">
-				<Calendar bind:value={date} initialFocus />
-			</Popover.Content>
-		</Popover.Root>
-	</div> -->
+	<div>
+		<Label title="Укажите описание проекта. Может быть полезно при командной работе">
+			Описание проекта
+		</Label>
+		<Textarea
+			maxLength={350}
+			disabled={isLoading}
+			bind:value={description}
+			placeholder="Веб-приложение для продвинутого управления задачами"
+		/>
+	</div>
 	<div class="flex items-center">
 		<Checkbox disabled={isLoading} bind:checked={remind} class="mr-2" />
 		<Label>Напоминать Вам о задачах?</Label>
 	</div>
 	<hr class="my-2" />
-	<Button size="lg" on:click={submit} disabled={isLoading}>Создать</Button>
+	<Button size="lg" class="w-28" on:click={submit} disabled={isLoading}>
+		{#if isLoading}
+			<LoaderCircle class="animate-spin size-4" />
+		{:else}
+			Создать
+		{/if}
+	</Button>
 </div>

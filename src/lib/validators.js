@@ -16,5 +16,6 @@ export const projectValidator = z.object({
 	authorId: z.number(),
 	remind: z.boolean(),
 	deadline: z.coerce.date({ message: 'Некорректная дата' }),
-	createdAt: z.coerce.date({ message: 'Некорректная дата' })
+	createdAt: z.coerce.date({ message: 'Некорректная дата' }),
+	description: z.ostring().nullable()
 })

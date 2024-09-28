@@ -6,9 +6,10 @@ import { eq } from 'drizzle-orm';
 import { projectValidator } from '$lib/validators';
 
 const CreateProjectDTO = z.object({
-	name: z.ostring(),
+	name: z.string(),
 	remind: z.boolean().default(false),
-	deadline: z.coerce.date({ message: 'Некорректная дата' }).optional()
+	deadline: z.coerce.date({ message: 'Некорректная дата' }).optional(),
+	description: z.string().optional()
 });
 
 /** @type {import('./$types').RequestHandler} */
@@ -50,9 +51,10 @@ export async function POST({ request, cookies }) {
 		name: values.name ?? `Проект №${user?.projects.length}`,
 		deadline: values.deadline ? values.deadline.toISOString() : null,
 		createdAt: new Date().toISOString(),
+		description: values.description,
 		authorId: user.id,
 		percentage: 0,
-		remind: values.remind
+		remind: values.remind,
 	});
 
 	return new Response(JSON.stringify(saved), { status: 201 });
@@ -84,7 +86,8 @@ export async function PATCH({ request, cookies }) {
 	const created = await db.update(projects).set({
 		name: payload.data.name,
 		remind: payload.data.remind,
-		percentage: payload.data.percentage
+		percentage: payload.data.percentage,
+		description: payload.data.description
 	}).where(eq(projects.id, payload.data.id)).returning();
 
 	return new Response(JSON.stringify(created), { status: 201 })

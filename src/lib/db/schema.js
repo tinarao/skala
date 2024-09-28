@@ -35,6 +35,11 @@ export const usersRelations = relations(users, ({ many }) => ({
 export const projects = pgTable('project', {
 	id: serial('id').primaryKey(),
 	name: text('name'),
+	description: text('description'),
+	links: text('links')
+		.array()
+		.notNull()
+		.default(sql`'{}'::text[]`),
 	percentage: doublePrecision('precentage').default(0.0).notNull(),
 	authorId: integer('projectId').references(() => users.id),
 	picture: text('picture'),

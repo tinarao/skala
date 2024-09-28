@@ -11,6 +11,8 @@
 	import ChangeAvatarDialog from '$lib/components/projects/change-avatar-dialog.svelte';
 	import { cn } from '$lib/utils.js';
 	import { onMount } from 'svelte';
+	import * as Collapsible from '$lib/components/ui/collapsible';
+	import Button from '$lib/components/ui/button/button.svelte';
 
 	export let data;
 	// // Попробую когда-нибудь починить это уёбище
@@ -71,7 +73,7 @@
 <title>Проект {data.project.name} - Skala</title>
 <div class="flex flex-col h-full">
 	<header class="flex justify-between items-center border-b py-2">
-		<h3 title="Название проекта" class="font-medium text-xl">{data.project.name}</h3>
+		<h3 title="Название проекта" class="font-[700] text-xl">{data.project.name}</h3>
 		<div class="flex gap-x-2 items-center">
 			<div class="pr-2 border-r">
 				<h4
@@ -173,4 +175,10 @@
 			</div>
 		</div>
 	</div>
+
+	{#if data.project.description}
+		<p title="Описание проекта {data.project.name}" class="font-[400] py-2 border-t">
+			{data.project.description}
+		</p>
+	{/if}
 </div>
