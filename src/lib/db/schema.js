@@ -68,7 +68,7 @@ export const tasks = pgTable('task', {
 	id: serial('id').primaryKey(),
 	name: text('name'),
 	status: taskStatusEnum('status').default('not_started'),
-	priority: taskPriorityEnum('priority').default('normal'),
+	priority: taskPriorityEnum('priority').default('normal').notNull(),
 	description: text('description'),
 	projectId: integer('projectId').references(() => projects.id, { onDelete: 'cascade' })
 });

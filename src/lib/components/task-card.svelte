@@ -31,13 +31,30 @@
 			return;
 		});
 	});
+
+	const priorityLiterals = {
+		low: '',
+		normal: '',
+		high: '!',
+		ultra: '!!'
+	};
 </script>
 
 <Collapsible.Root>
-	<article role="listitem" id="task-{task.id}" draggable="true" class="task-card p-2 border rounded-md">
+	<article
+		role="listitem"
+		id="task-{task.id}"
+		draggable="true"
+		class="task-card p-2 border rounded-md"
+	>
 		<span class="hidden" aria-hidden="true">{task.id}</span>
 		<div class="flex items-center justify-between flex-shrink">
-			<h6 class="font-medium">{task.name}</h6>
+			<h6 class="font-medium line-clamp-3">
+				<span class="font-bold text-red-500 mr-2">
+					{priorityLiterals[task.priority]}
+				</span>
+				{task.name}
+			</h6>
 			<div>
 				{#if task.description}
 					<Collapsible.Trigger asChild let:builder>

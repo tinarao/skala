@@ -43,7 +43,7 @@ export const actions = {
         event.cookies.set('session_id', sessionId, { path: '/' });
         event.cookies.set('id', user.id.toString(), { path: '/' });
 
-        const updated = await db
+        await db
             .update(users)
             .set({ sessionId: sessionId })
             .where(eq(users.id, user.id))

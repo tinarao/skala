@@ -8,6 +8,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import * as Select from '$lib/components/ui/select';
+	import { LoaderCircle } from 'lucide-svelte';
 
 	export let data;
 
@@ -39,68 +40,73 @@
 </script>
 
 <title>Проекты - Skala</title>
-<div class="h-full py-2">
-	<h1 class="text-4xl font-medium">Проекты</h1>
-	<div class="w-full py-2">
-		<Select.Root onSelectedChange={(e) => (filter = e?.value)}>
-			<Select.Trigger class="w-[180px]">
-				<Select.Value placeholder="Фильтр" />
-			</Select.Trigger>
-			<Select.Content class="bg-background text-text">
-				<Select.Item value="done">Завершённые</Select.Item>
-				<Select.Item value="active">Активные</Select.Item>
-				<Select.Item value="all">Все</Select.Item>
-			</Select.Content>
-		</Select.Root>
-	</div>
 
-	<div class="grid grid-cols-4 gap-4 py-2">
-		{#if data.projects?.length && data.projects !== undefined}
-			{#each projects as project}
-				<a
-					href="/app/project?id={project.id}"
-					class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
-				>
-					<div class="h-60 w-full">
-						<img
-							class="size-full object-cover"
-							src={project.picture ?? Placeholder}
-							alt="Проект {project.name}"
-						/>
-					</div>
-					<div class="p-2">
-						<h6 class="font-medium text-lg">{project.name}</h6>
-					</div>
-					<hr class="my-1" />
-					<div class="p-2 mb-3 space-y-1">
-						<span class="font-medium">Прогресс: {project.percentage}%</span>
-						<Progress value={project.percentage} />
-					</div>
-				</a>
-			{/each}
-		{/if}
-		<div class="col-span-1 h-16 rounded-md">
-			<Dialog.Root>
-				<Dialog.Trigger asChild let:builder>
-					<Button builders={[builder]} variant="ghost" class="size-full">
-						<Plus />
-					</Button>
-				</Dialog.Trigger>
-				<Dialog.Content>
-					<Dialog.Header>
-						<Dialog.Title>Создать проект</Dialog.Title>
-					</Dialog.Header>
-					<CreateProjectForm />
-				</Dialog.Content>
-			</Dialog.Root>
+{#if !data.projects.length}
+	<div class="h-full items-center justify-center">
+		<LoaderCircle class="animate-spin size-16" />
+	</div>
+{:else}
+	<div class="h-full py-2">
+		<h1 class="text-4xl font-medium">Проекты</h1>
+		<div class="w-full py-2">
+			<Select.Root onSelectedChange={(e) => (filter = e?.value)}>
+				<Select.Trigger class="w-[180px]">
+					<Select.Value placeholder="Фильтр" />
+				</Select.Trigger>
+				<Select.Content class="bg-background text-text">
+					<Select.Item value="done">Завершённые</Select.Item>
+					<Select.Item value="active">Активные</Select.Item>
+					<Select.Item value="all">Все</Select.Item>
+				</Select.Content>
+			</Select.Root>
 		</div>
-	</div>
 
-	{#if data.collabs && data.collabs.length}
-		<hr class="my-2" />
-		<h3 class="font-medium text-xl">Совместная работа</h3>
 		<div class="grid grid-cols-4 gap-4 py-2">
 			{#if data.projects?.length && data.projects !== undefined}
+				{#each data.projects as project}
+					<a
+						href="/app/project?id={project.id}"
+						class="col-span-1 border rounded-md hover:shadow-md transition hover:bg-neutral-800"
+					>
+						<div class="h-60 w-full">
+							<img
+								class="size-full object-cover"
+								src={project.picture ?? Placeholder}
+								alt="Проект {project.name}"
+							/>
+						</div>
+						<div class="p-2">
+							<h6 class="font-medium text-lg">{project.name}</h6>
+						</div>
+						<hr class="my-1" />
+						<div class="p-2 mb-3 space-y-1">
+							<span class="font-medium">Прогресс: {project.percentage}%</span>
+							<Progress value={project.percentage} />
+						</div>
+					</a>
+				{/each}
+			{/if}
+			<div class="col-span-1 h-16 rounded-md">
+				<Dialog.Root>
+					<Dialog.Trigger asChild let:builder>
+						<Button builders={[builder]} variant="ghost" class="size-full">
+							<Plus />
+						</Button>
+					</Dialog.Trigger>
+					<Dialog.Content>
+						<Dialog.Header>
+							<Dialog.Title>Создать проект</Dialog.Title>
+						</Dialog.Header>
+						<CreateProjectForm />
+					</Dialog.Content>
+				</Dialog.Root>
+			</div>
+		</div>
+
+		{#if data.collabs && data.collabs.length}
+			<hr class="my-2" />
+			<h3 class="font-medium text-xl">Совместная работа</h3>
+			<div class="grid grid-cols-4 gap-4 py-2">
 				{#each data.collabs as collab}
 					<a
 						href="/app/project?id={collab.project.id}"
@@ -117,7 +123,7 @@
 						</div>
 					</a>
 				{/each}
-			{/if}
-		</div>
-	{/if}
-</div>
+			</div>
+		{/if}
+	</div>
+{/if}

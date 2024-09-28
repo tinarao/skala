@@ -1,13 +1,15 @@
 <script>
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { toast } from 'svelte-sonner';
-	import { Label } from './ui/label';
 	import { Textarea } from './ui/textarea';
 	import { goto, invalidate, invalidateAll } from '$app/navigation';
 	import Button from './ui/button/button.svelte';
 	import TaskComments from './tasks/task-comments.svelte';
 	import { onMount } from 'svelte';
 	import { LoaderCircle } from 'lucide-svelte';
+	import * as Select from '$lib/components/ui/select';
+	import Label from './ui/label/label.svelte';
+	import { priorityTranslations } from '$lib/priority';
 
 	/** @type {import("$lib/typedefs").Task}*/
 	export let task;
@@ -27,6 +29,27 @@
 		const res = await fetch('/api/projects/tasks', {
 			method: 'PATCH',
 			body: JSON.stringify({ ...task, description: desc })
+		});
+
+		const resData = await res.json();
+		if (!res.ok) {
+			toast.error('Ошибка при обновлении задачи');
+			isEditingDescription = false;
+			return;
+		}
+
+		invalidate('tasks:fetch');
+		toast.success('Задача обновлена!');
+
+		isEditingDescription = false;
+		return;
+	}
+
+	/** @param {string} newPriority*/
+	async function handleChangeTaskPriority(newPriority) {
+		const res = await fetch('/api/projects/tasks', {
+			method: 'PATCH',
+			body: JSON.stringify({ ...task, priority: newPriority })
 		});
 
 		const resData = await res.json();
@@ -104,6 +127,31 @@
 							variant="outline">Добавить описание</Button
 						>
 					{/if}
+				</div>
+				<hr class="my-2" />
+				<div class="space-y-2">
+					<h4 class="font-medium text-xl">Приоритет</h4>
+					<p>
+						Текущий: {#if isLoading}
+							Загрузка...
+						{:else}
+							{priorityTranslations[task.priority]}
+						{/if}
+					</p>
+					<div>
+						<Label>Изменить</Label>
+						<Select.Root onSelectedChange={(e) => handleChangeTaskPriority(e?.value)}>
+							<Select.Trigger class="border-border">
+								<Select.Value placeholder="Приоритет" />
+							</Select.Trigger>
+							<Select.Content class="bg-background text-text">
+								<Select.Item value="low">Низкий</Select.Item>
+								<Select.Item value="normal">Обычный</Select.Item>
+								<Select.Item value="high">Высокий</Select.Item>
+								<Select.Item value="ultra">Ультра</Select.Item>
+							</Select.Content>
+						</Select.Root>
+					</div>
 				</div>
 				<hr class="my-2" />
 				<TaskComments comments={task.comments} taskId={task.id ?? 0} />

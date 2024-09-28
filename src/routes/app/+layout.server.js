@@ -2,10 +2,9 @@ import { db } from '$lib/db/db';
 import { utapi } from '$lib/server/ut';
 
 /** @type {import('./$types').LayoutServerLoad} */
-export async function load({ cookies, locals }) {
+export async function load({ locals }) {
 	const user = locals.user;
 
-	console.time('Index data')
 	const [projects, collabs, invites] = await Promise.all([
 		db.query.projects.findMany({
 			where: (project, { eq }) => eq(project.authorId, user.id)
@@ -29,7 +28,11 @@ export async function load({ cookies, locals }) {
 			project.picture = url.url
 		}
 	}
-	console.timeEnd('Index data')
 
-	return { user, projects, collabs, invites }
+	return {
+		user,
+		collabs,
+		invites,
+		projects
+	}
 }
