@@ -47,23 +47,26 @@
 	method="POST"
 	action="?/login"
 	use:enhance={({ formData }) => {
-		if (!username || !password) {
-			toast.error('Проверьте правильность введённых данных');
-			return;
-		}
-
-		formData.append('username', username);
-		formData.append('password', password);
-
-		return async ({ update }) => {
-			await update();
-			toasts($page.status);
-
-			isLoading = false;
-			if ($page.status === 200) {
-				goto('/app');
+		isLoading = true;
+		try {
+			if (!username || !password) {
+				toast.error('Проверьте правильность введённых данных');
+				return;
 			}
-		};
+
+			formData.append('username', username);
+			formData.append('password', password);
+
+			return async ({ update }) => {
+				await update();
+				toasts($page.status);
+				if ($page.status === 200) {
+					goto('/app');
+				}
+			};
+		} finally {
+			isLoading = false;
+		}
 	}}
 >
 	<div>
